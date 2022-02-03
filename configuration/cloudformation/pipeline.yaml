@@ -1,0 +1,154 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: CodePipelin for res-rec-manager service
+Resources:
+  CodePipeline:
+    Type: "AWS::CodePipeline::Pipeline"
+    Properties:
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      ArtifactStore:
+        Type: S3
+        Location: codepipeline-us-west-2-789836859937
+
+      Stages:
+        -
+          Name: Source
+          Actions:
+            -
+              Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: AWS
+                Version: 1
+                Provider: CodeStarSourceConnection # TODO: the fuck is this?
+              Configuration:
+                BranchName: main
+                ConnectionArn: arn:aws:codestar-connections:us-west-2:379689532145:connection/d745d49f-df04-4df0-b6df-4dd5dd3a74d3
+                FullRepositoryId: stephen-terrell/rec-res-manager
+                OutputArtifactFormat: CODE_ZIP
+              Namespace: SourceVariables
+              OutputArtifacts:
+                -
+                  Name: SourceArtifact
+              Region: us-west-2
+              RunOrder: 1
+        -
+          Name: Build
+          Actions:
+            -
+              Name: Build
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Version: 1
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: rec-res-service
+              Namespace: BuildVariables
+              InputArtifacts:
+                -
+                  Name: SourceArtifact
+              OutputArtifacts:
+                - Name: BuildArtifact
+              Region: us-west-2
+              RunOrder: 1
+
+  CodeBuild:
+    Type: "AWS::CodeBuild::Project"
+    Properties:
+      Name: rec-res-service-build
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: configuration/build/buildspec.yml
+      Artifacts:
+        Type: CODEPIPELINE
+        Name: rec-res-service-build
+        Packaging: NONE
+      Cache:
+        Type: NO_CACHE
+      Environment:
+        Type: LINUX_CONTAINER
+        Image: aws/codebuild/amazonlinux2-x86_64-standard:3.0
+        ComputeType: BUILD_GENERAL1_SMALL
+        PrivilegedMode: false
+        ImagePullCredentialsType: CODEBUILD
+      ServiceRole: !GetAtt CodeBuildServiceRole.Arn
+      TimeoutInMinutes: 60
+      QueuedTimeoutInMinutes: 480
+      LogsConfig:
+        CloudWatchLogs: # no like
+          Status: ENABLED
+        S3Logs:
+          Status: DISABLED
+          EncryptionDisabled: false
+      Visibility: PRIVATE
+
+  CodeBuildServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "codebuild.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      MaxSessionDuration: 3600
+      Path: "/service-role/"
+      RoleName: rec-res-code-build-service-role
+
+  CodePipelineServiceRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "codepipeline.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        -
+          PolicyName: rec-rec-codepipeline-service-role-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "codestar-connections:UseConnection"
+                Resource:
+                  - "*"
+              -
+                Effect: "Allow"
+                Action:
+                  - "codebuild:BatchGetBuilds"
+                  - "codebuild:StartBuild"
+                  - "codebuild:BatchGetBuildBatches"
+                  - "codebuild:StartBuildBatch"
+                Resource:
+                  - "*"
+              -
+                Effect: "Allow"
+                Action:
+                  - "codebuild:BatchGetBuilds"
+                  - "codebuild:StartBuild"
+                  - "codebuild:BatchGetBuildBatches"
+                  - "codebuild:StartBuildBatch"
+                Resource:
+                  - "*"
+              -
+                Effect: "Allow"
+                Action:
+                  - "s3:*" # this is bad, but i cannot for the life of me figure out what perms github needs here
+                Resource:
+                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe"
+                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe/*"
+      MaxSessionDuration: 3600
+      Path: "/service-role/"
+      RoleName: rec-res-codepipeline-service-role
