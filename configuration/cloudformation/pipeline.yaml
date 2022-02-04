@@ -57,32 +57,25 @@ Resources:
             -
               ActionTypeId:
                 Category: Deploy
-                Ownder: AWS
-                Provider: Cloudformation
+                Owner: AWS
+                Provider: CloudFormation
                 Version: 1
               Configuration:
                 ActionMode: CREATE_UPDATE
                 Capabilities: CAPABILITY_IAM
                 ChangeSetName: service-stack-changeset
-                ParamaterOverrides: |
+                ParameterOverrides: |
                   {
                     "buildArtifactBucketName": { "Fn::GetArtifactAtt": ["BuildArtifact", "BucketName"]},
                     "buildArtifactObjectKey": { "Fn::GetArtifactAtt": ["BuildArtifact", "ObjectKey"]}
                   }
                 RoleArn: !GetAtt CloudFormationTrustRole.Arn
                 StackName: res-res-service-stack
-                TemplatePath:
-                  - ''
-                  - - !Ref 'AWS::StackName'
-                    - -BuildArtifact
-                    - ::configuration/cloudformation/service-stack.yml
+                TemplatePath: BuildArtifact::configuration/cloudformation/service-stack.yml
               InputArtifacts:
-              - Name: !Join
-                - '-'
-                - - !Ref 'AWS::StackName'
-                  - BuildArtifact
+              - Name: BuildArtifact
               Name: DeployServiceStack
-
+              RunOrder: 1
 
   CodeBuild:
     Type: "AWS::CodeBuild::Project"
@@ -213,7 +206,14 @@ Resources:
                   - 'cloudformation:DeleteChangeSet'
                   - 'cloudformation:DescribeChangeSet'
                   - 'cloudformation:SetStackPolicy'
-                Resource: '*'
+                Resource:
+                  - '*'
+              -
+                Effect: "Allow"
+                Action:
+                  - "iam:PassRole"
+                Resource:
+                  - !GetAtt CloudFormationTrustRole.Arn
       MaxSessionDuration: 3600
       Path: "/service-role/"
       RoleName: rec-res-codepipeline-service-role

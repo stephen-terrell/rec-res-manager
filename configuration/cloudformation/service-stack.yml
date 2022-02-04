@@ -35,15 +35,15 @@ Resources:
                 - "codebuild.amazonaws.com"
             Action:
               - "sts:AssumeRole"
-        Policies:
-          -
-            PolicyName: rec-res-codebuild-service-role-policy
-            PolicyDocument:
-              Version: "2012-10-17"
-              Statement:
-                -
-                  Effect: "Allow"
-                  Action:
-                    - "s3:GetObject"
-                  Resource:
-                    - "*"
+      Policies:
+        -
+          PolicyName: rec-res-codebuild-service-role-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "s3:GetObject"
+                Resource:
+                  - "*"
