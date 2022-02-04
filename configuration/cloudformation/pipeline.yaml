@@ -1,4 +1,5 @@
 AWSTemplateFormatVersion: "2010-09-09"
+
 Description: CodePipelin for res-rec-manager service
 Resources:
   CodePipeline:
@@ -50,6 +51,38 @@ Resources:
                 - Name: BuildArtifact
               Region: us-west-2
               RunOrder: 1
+        -
+          Name: Deploy
+          Actions:
+            -
+              ActionTypeId:
+                Category: Deploy
+                Ownder: AWS
+                Provider: Cloudformation
+                Version: 1
+              Configuration:
+                ActionMode: CREATE_UPDATE
+                Capabilities: CAPABILITY_IAM
+                ChangeSetName: service-stack-changeset
+                ParamaterOverrides: |
+                  {
+                    "buildArtifactBucketName": { "Fn::GetArtifactAtt": ["BuildArtifact", "BucketName"]},
+                    "buildArtifactObjectKey": { "Fn::GetArtifactAtt": ["BuildArtifact", "ObjectKey"]}
+                  }
+                RoleArn: !GetAtt CloudFormationTrustRole.Arn
+                StackName: res-res-service-stack
+                TemplatePath:
+                  - ''
+                  - - !Ref 'AWS::StackName'
+                    - -BuildArtifact
+                    - ::configuration/cloudformation/service-stack.yml
+              InputArtifacts:
+              - Name: !Join
+                - '-'
+                - - !Ref 'AWS::StackName'
+                  - BuildArtifact
+              Name: DeployServiceStack
+
 
   CodeBuild:
     Type: "AWS::CodeBuild::Project"
@@ -184,3 +217,55 @@ Resources:
       MaxSessionDuration: 3600
       Path: "/service-role/"
       RoleName: rec-res-codepipeline-service-role
+
+  CloudFormationTrustRole:
+    Type: AWS::IAM::Role
+    Description: Creating service role in IAM for AWS CloudFormation
+    Properties:
+      RoleName: rec-res-cloudformation-service-stack-role
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service:
+                - cloudformation.amazonaws.com
+      Path: /
+      Policies:
+        -
+          PolicyName: rec-res-cloudformation-service-stack-policy
+          PolicyDocument:
+            Statement:
+              -
+                Action:
+                  - iam:CreateRole
+                  - iam:AttachRolePolicy
+                  - iam:PutRolePolicy
+                  - iam:PassRole
+                  - iam:DetachRolePolicy
+                  - iam:ListRolePolicies
+                  - iam:GetRole
+                  - iam:DeleteRolePolicy
+                  - iam:UpdateRoleDescription
+                  - iam:ListRoles
+                  - iam:DeleteRole
+                  - iam:GetRolePolicy
+                  - iam:CreateInstanceProfile
+                  - iam:AddRoleToInstanceProfile
+                  - iam:DeleteInstanceProfile
+                  - iam:GetInstanceProfile
+                  - iam:ListInstanceProfiles
+                  - iam:ListInstanceProfilesForRole
+                  - iam:RemoveRoleFromInstanceProfile
+                Effect: Allow
+                Resource: '*'
+              -
+                Action:
+                  - codedeploy:*
+                Effect: Allow
+                Resource: '*'
+              -
+                Action:
+                  - lambda:*
+                Effect: Allow
+                Resource: '*'

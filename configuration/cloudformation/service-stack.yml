@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Service stack for recreation reservation manager service
+
+Parameters:
+  buildArtifactBucketName:
+    Type: String
+  buildArtifactObjectKey:
+    Type: String
+
+Resources:
+  CheckReservationsLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: rec-res-check-reservations
+      Runtime: python3.9
+      Role: !GetAtt LambdaRole.Arn
+      Handler: src/handler/check_requested_reservations.handler
+      Timeout: 10
+      MemorySize: 128
+      Code:
+        S3Bucket: !Ref buildArtifactBucketName
+        S3Key: !Ref buildArtifactObjectKey
+
+  LambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          -
+            Effect: "Allow"
+            Principal:
+              Service:
+                - "codebuild.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+        Policies:
+          -
+            PolicyName: rec-res-codebuild-service-role-policy
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                -
+                  Effect: "Allow"
+                  Action:
+                    - "s3:GetObject"
+                  Resource:
+                    - "*"
