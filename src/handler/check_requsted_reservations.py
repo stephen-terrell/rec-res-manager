@@ -1,43 +1,13 @@
 import requests
 import datetime
 
+from event.check_reservations_event import CheckReservationsEvent
+
 sensitivity_levels = {
     'ALL_DAYS_AVAILABLE_NO_RV',
     'ANY_DAY_AVAILABLE_NO_RV',
     'ALL_DAYS_AVAILABLE',
     'ANY_DAY_AVAILABLE',
-}
-
-camp_config = {
-    'carly-stephen': {
-        'version': 1,
-        'subscribers': [
-            'something@gmail.com',
-        ],
-        'autoBookCredentials': {
-            'enc': '',
-        },
-        'campgrounds': [
-            {
-                'campgroundId': 232445,
-                'checkInDate': '04/01/2022',
-                'checkoutOutDate': '04/05/2022',
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAY_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE_NO_RV',
-                },
-            },
-        ],
-        'permits': [
-            {
-                'coming': 'soon',
-            },
-        ],
-    },
 }
 
 campsite_types = {
@@ -63,39 +33,43 @@ rv_like_campsite_types = {
 }
 
 def handle(event, context):
-    campground_id = '232445'
-    output_date = datetime.datetime.now().strftime("2022-%m-01T00:00:00.000Z")
+    # campground_id = '232445'
+    # output_date = datetime.datetime.now().strftime("2022-%m-01T00:00:00.000Z")
+    #
+    # print(output_date)
+    # params = {
+    #     'start_date': output_date
+    # }
+    # headers = {
+    #     'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
+    #     "Accept": "application/json",
+    #     "Accept-Encoding": "gzip, deflate",
+    #     "pragma": "no-cache"
+    # }
+    #
+    # url_pattern = 'https://www.recreation.gov/api/camps/availability/campground/{campground_id}/month'
+    #
+    # get = requests.get(url_pattern.format(campground_id=campground_id), params=params, headers=headers)
+    # # get = requests.get('https://www.recreation.gov/api/camps/availability/campground/232445/month?start_date=2022-04-01T00%3A00%3A00.000Z', headers=headers)
+    #
+    # # print(get.json())
+    #
+    # campsites = get.json()['campsites']
+    #
+    # camp_types = {}
+    # for key, value in campsites.items():
+    #     if value['type_of_use'] not in camp_types:
+    #         camp_types[value['type_of_use']] = 1
+    #     else:
+    #         camp_types[value['type_of_use']] += 1
+    #
+    #
+    # print(camp_types)
+    #
 
-    print(output_date)
-    params = {
-        'start_date': output_date
-    }
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.76 Safari/537.36',
-        "Accept": "application/json",
-        "Accept-Encoding": "gzip, deflate",
-        "pragma": "no-cache"
-    }
+    event_handler = CheckReservationsEvent(event, context)
 
-    url_pattern = 'https://www.recreation.gov/api/camps/availability/campground/{campground_id}/month'
-
-    get = requests.get(url_pattern.format(campground_id=campground_id), params=params, headers=headers)
-    # get = requests.get('https://www.recreation.gov/api/camps/availability/campground/232445/month?start_date=2022-04-01T00%3A00%3A00.000Z', headers=headers)
-
-    # print(get.json())
-
-    campsites = get.json()['campsites']
-
-    camp_types = {}
-    for key, value in campsites.items():
-        if value['type_of_use'] not in camp_types:
-            camp_types[value['type_of_use']] = 1
-        else:
-            camp_types[value['type_of_use']] += 1
-
-
-    print(camp_types)
-
+    event_handler.handle()
 
     return {'hello': 'world'}
 

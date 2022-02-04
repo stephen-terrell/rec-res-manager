@@ -29,7 +29,6 @@ Resources:
               OutputArtifacts:
                 -
                   Name: SourceArtifact
-              Region: us-west-2
               RunOrder: 1
         -
           Name: Build
@@ -42,7 +41,7 @@ Resources:
                 Version: 1
                 Provider: CodeBuild
               Configuration:
-                ProjectName: rec-res-service
+                ProjectName: rec-res-service-build
               Namespace: BuildVariables
               InputArtifacts:
                 -
@@ -149,6 +148,19 @@ Resources:
                 Resource:
                   - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe"
                   - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe/*"
+              -
+                Effect: "Allow"
+                Action:
+                  - 'cloudformation:CreateStack'
+                  - 'cloudformation:DescribeStacks'
+                  - 'cloudformation:DeleteStack'
+                  - 'cloudformation:UpdateStack'
+                  - 'cloudformation:CreateChangeSet'
+                  - 'cloudformation:ExecuteChangeSet'
+                  - 'cloudformation:DeleteChangeSet'
+                  - 'cloudformation:DescribeChangeSet'
+                  - 'cloudformation:SetStackPolicy'
+                Resource: '*'
       MaxSessionDuration: 3600
       Path: "/service-role/"
       RoleName: rec-res-codepipeline-service-role
