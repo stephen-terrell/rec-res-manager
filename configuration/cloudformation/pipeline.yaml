@@ -57,7 +57,7 @@ Resources:
       Name: rec-res-service-build
       Source:
         Type: CODEPIPELINE
-        BuildSpec: configuration/build/buildspec.yml
+        BuildSpec: configuration/codebuild/buildspec.yml
       Artifacts:
         Type: CODEPIPELINE
         Name: rec-res-service-build
@@ -94,6 +94,26 @@ Resources:
                 - "codebuild.amazonaws.com"
             Action:
               - "sts:AssumeRole"
+      Policies:
+        -
+          PolicyName: rec-res-codebuild-service-role-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              -
+                Effect: "Allow"
+                Action:
+                  - "logs:*"
+                Resource:
+                  - "*"
+              -
+                Effect: "Allow"
+                Action:
+                  - "s3:*" # this is bad, but i cannot for the life of me figure out what perms github needs here
+                Resource:
+                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe"
+                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe/*"
+
       MaxSessionDuration: 3600
       Path: "/service-role/"
       RoleName: rec-res-code-build-service-role
@@ -113,7 +133,7 @@ Resources:
               - "sts:AssumeRole"
       Policies:
         -
-          PolicyName: rec-rec-codepipeline-service-role-policy
+          PolicyName: rec-res-codepipeline-service-role-policy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:

@@ -1,10 +1,12 @@
 version: 0.2
 
 phases:
-  install:
+  pre_build:
     commands:
-      - pip install -r requirements.txt -t libs
+      - pip install -r requirements.txt
+  build:
+    commands:
+      - python -m unittest discover -s my-api
 artifacts:
   files:
-    - 'src/*'
-    - 'configuration/cloudformation/service-stack.yml'
+    - '**/*'
