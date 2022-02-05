@@ -1,7 +1,7 @@
 import requests
 import datetime
 
-from event.check_reservations_event import CheckReservationsEvent
+from src.event.check_reservations_event import CheckReservationsEvent
 
 sensitivity_levels = {
     'ALL_DAYS_AVAILABLE_NO_RV',

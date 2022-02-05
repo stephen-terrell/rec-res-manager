@@ -1,6 +1,6 @@
 from dataclasses import dataclass, field
 import requests
-from provider.user_config_provider import UserConfigProvider
+from src.provider.user_config_provider import UserConfigProvider
 
 
 @dataclass

@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from typing import List
-from model.campground_reservation_config import CampgroundReservationConfigV1
-from model.permit_reservation_config import PermitReservationConfigV1
+from src.model.campground_reservation_config import CampgroundReservationConfigV1
+from src.model.permit_reservation_config import PermitReservationConfigV1
 
 
 @dataclass

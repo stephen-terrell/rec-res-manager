@@ -1,9 +1,9 @@
 from datetime import datetime
 
-from model.reservation_config import ReservationConfigV1
-from model.campground_reservation_config import CampgroundReservationConfigV1
-from model.notification_preference_config import NotificationPreferenceConfig
-from model.auto_book_preference_config import AutoBookPreferenceConfig
+from src.model.reservation_config import ReservationConfigV1
+from src.model.campground_reservation_config import CampgroundReservationConfigV1
+from src.model.notification_preference_config import NotificationPreferenceConfig
+from src.model.auto_book_preference_config import AutoBookPreferenceConfig
 
 
 class ReservationConfigFactory:

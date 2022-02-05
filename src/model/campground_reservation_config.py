@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
-from model.notification_preference_config import NotificationPreferenceConfig
-from model.auto_book_preference_config import AutoBookPreferenceConfig
+from src.model.notification_preference_config import NotificationPreferenceConfig
+from src.model.auto_book_preference_config import AutoBookPreferenceConfig
 
 
 @dataclass
