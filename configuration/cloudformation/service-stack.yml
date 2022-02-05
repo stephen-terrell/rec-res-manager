@@ -25,6 +25,7 @@ Resources:
   LambdaRole:
     Type: "AWS::IAM::Role"
     Properties:
+      RoleName: rec-res-lambda-role
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -32,12 +33,12 @@ Resources:
             Effect: "Allow"
             Principal:
               Service:
-                - "codebuild.amazonaws.com"
+                - "lambda.amazonaws.com"
             Action:
               - "sts:AssumeRole"
       Policies:
         -
-          PolicyName: rec-res-codebuild-service-role-policy
+          PolicyName: rec-res-lambda-policy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:

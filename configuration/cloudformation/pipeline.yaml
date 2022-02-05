@@ -269,3 +269,10 @@ Resources:
                   - lambda:*
                 Effect: Allow
                 Resource: '*'
+              -
+                Action:
+                  - s3:GetObject
+                Effect: Allow
+                Resource:
+                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe"
+                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe/*"
