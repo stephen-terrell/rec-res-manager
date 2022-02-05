@@ -1,6 +1,7 @@
-from model.reservation_config import ReservationConfigV1
-from factory.reservation_config_factory import ReservationConfigFactory
 from typing import List
+
+from src.model.reservation_config import ReservationConfigV1
+from src.factory.reservation_config_factory import ReservationConfigFactory
 
 
 class UserConfigProvider:
