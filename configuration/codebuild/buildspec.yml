@@ -4,7 +4,7 @@ phases:
   pre_build:
     commands:
       - echo `ls`
-      - pip install -r requirements.txt
+      - pip install -r requirements.txt --target ./
       - echo `ls`
   build:
     commands:
