@@ -21,6 +21,9 @@ Resources:
       Code:
         S3Bucket: !Ref buildArtifactBucketName
         S3Key: !Ref buildArtifactObjectKey
+      Environment:
+        Variables:
+          CONFIG_BUCKET_NAME: !Ref ConfigBucket
 
   LambdaRole:
     Type: "AWS::IAM::Role"
@@ -71,3 +74,28 @@ Resources:
       BucketName: !Join
         - '-'
         - ['rec-res-manager-configuration-bucket', !Ref "AWS::Region", !Ref "AWS::AccountId"]
+
+  CheckReservationsEventRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Name: check-reservations-event-rule
+      ScheduleExpression: "rate(1 minutes)"
+      State: "ENABLED"
+      Targets:
+        -
+          Arn:
+            Fn::GetAtt:
+              - "CheckReservationsLambda"
+              - "Arn"
+          Id: "TargetFunctionV1"
+
+  PermissionForEventsToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref "CheckReservationsLambda"
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn:
+        Fn::GetAtt:
+          - "CheckReservationsEventRule"
+          - "Arn"

@@ -109,7 +109,7 @@ class CheckReservationsEvent:
     def __notify_found_availabilities(self, owner: str, campground_availabilities: List[CampgroundAvailability]):
         message_string = self._email_formatter.get_formatted_message(campground_availabilities)
         print(message_string)
-        #self._sns_proxy.send_notification(owner=owner, message=message_string)
+        self._sns_proxy.send_notification(owner=owner, message=message_string)
 
     def __availability_match(self, campsite: CampsiteAvailability, notification_preferences: NotificationPreferenceConfig) -> bool:
         if campsite.is_fully_available() and notification_preferences.notification_sensitivity_level == SensitivityLevel.ALL_DAYS_AVAILABLE:
@@ -139,14 +139,3 @@ class CheckReservationsEvent:
                 return True
 
         return False
-
-
-config = {
-    'carly-stephen': {
-        '1234': { # campground
-            '2324': { # campsite
-                '2022-02-11': 'Available'
-            }
-        }
-    }
-}

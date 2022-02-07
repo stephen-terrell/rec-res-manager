@@ -1,8 +1,4 @@
-import requests
-import datetime
-
 from src.event.check_reservations_event import CheckReservationsEvent
-from src.model.enum.sensitivity_level import SensitivityLevel
 
 sensitivity_levels = {
     'ALL_DAYS_AVAILABLE_NO_RV',
