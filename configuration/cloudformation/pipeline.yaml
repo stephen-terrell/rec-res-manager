@@ -306,6 +306,7 @@ Resources:
                 Action:
                   - 'events:PutRule'
                   - 'events:PutRuleTargets'
+                  - 'events:DescribeRule'
                 Effect: Allow
                 Resource:
                   - '*'

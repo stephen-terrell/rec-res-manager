@@ -79,7 +79,7 @@ Resources:
     Type: "AWS::Events::Rule"
     Properties:
       Name: check-reservations-event-rule
-      ScheduleExpression: "rate(1 minutes)"
+      ScheduleExpression: "cron(* * * * ? *)"
       State: "ENABLED"
       Targets:
         -
