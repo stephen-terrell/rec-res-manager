@@ -288,3 +288,10 @@ Resources:
                 Resource:
                   - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe"
                   - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe/*"
+              -
+                Action:
+                  - 'sns:CreateTopic'
+                  - 'sns:Subscribe'
+                Effect: Allow
+                Resource:
+                  - '*'

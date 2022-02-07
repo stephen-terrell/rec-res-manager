@@ -46,5 +46,27 @@ Resources:
                 Effect: "Allow"
                 Action:
                   - "s3:GetObject"
+                  - "s3:PutObject"
                 Resource:
                   - "*"
+              -
+                Effect: "Allow"
+                Action:
+                  - "sns:ListTopics"
+                  - "sns:Publish"
+
+  NotificationTopic:
+    Type: "AWS::SNS::Topic"
+    Properties:
+      TopicName: rec-res-notification-carly-stephen
+      Subscription:
+        -
+          Endpoint: stephen.terrell14+rec-res@gmail.com
+          Protocol: email
+
+  ConfigBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Join
+        - '-'
+        - ['rec-res-manager-configuration-bucket', !Ref "AWS::Region", !Ref "AWS::AccountId"]

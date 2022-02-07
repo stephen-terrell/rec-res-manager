@@ -2,6 +2,7 @@ import requests
 import datetime
 
 from src.event.check_reservations_event import CheckReservationsEvent
+from src.model.enum.sensitivity_level import SensitivityLevel
 
 sensitivity_levels = {
     'ALL_DAYS_AVAILABLE_NO_RV',
@@ -32,7 +33,7 @@ rv_like_campsite_types = {
     'STANDARD ELECTRIC',  # TODO: are we sure about this?
 }
 
-def handle(event, context):
+def handler(event, context):
     # campground_id = '232445'
     # output_date = datetime.datetime.now().strftime("2022-%m-01T00:00:00.000Z")
     #
@@ -75,4 +76,4 @@ def handle(event, context):
 
 
 if __name__ == '__main__':
-    handle(1, 2)
+    handler(1, 2)
