@@ -8,4 +8,4 @@ class S3Proxy:
         return self.__s3_client.get_object(Bucket=bucket_name, Key=key)
 
     def put_object(self, bucket_name: str, key: str, object_data: str):
-        pass
+        self.__s3_client.put_object(Bucket=)

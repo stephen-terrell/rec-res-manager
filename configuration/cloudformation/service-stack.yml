@@ -54,6 +54,7 @@ Resources:
                 Action:
                   - "sns:ListTopics"
                   - "sns:Publish"
+                Resource: "*"
 
   NotificationTopic:
     Type: "AWS::SNS::Topic"

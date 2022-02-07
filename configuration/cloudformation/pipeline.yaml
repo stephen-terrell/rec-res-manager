@@ -292,6 +292,13 @@ Resources:
                 Action:
                   - 'sns:CreateTopic'
                   - 'sns:Subscribe'
+                  - 'sns:GetTopicAttributes'
+                Effect: Allow
+                Resource:
+                  - '*'
+              -
+                Action:
+                  - 's3:CreateBucket'
                 Effect: Allow
                 Resource:
                   - '*'

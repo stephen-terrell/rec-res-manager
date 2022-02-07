@@ -38,6 +38,8 @@ class NotificationConfigProvider:
                         for campsite_id, campsite_update_config in campground_update_config.items():
                             current_config[owner][campground_id][campsite_id] = campsite_update_config
 
+        self.__s3_proxy.put_object(self.__config_bucket_name, self.__config_key, json.dumps(current_config))
+
 
 test_config = {
     'carly-stephen': {
