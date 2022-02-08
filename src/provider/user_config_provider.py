@@ -31,19 +31,6 @@ camp_configs = [
         },
         'campgrounds': [
             {
-                'campgroundId': '232279',
-                'checkInDate': '02/11/2022',
-                'checkOutDate': '02/13/2022',
-                'allowRvLikeSites': False,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
                 'campgroundId': '232445',
                 'checkInDate': '04/01/2022',
                 'checkOutDate': '04/05/2022',

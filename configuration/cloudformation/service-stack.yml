@@ -58,6 +58,13 @@ Resources:
                   - "sns:ListTopics"
                   - "sns:Publish"
                 Resource: "*"
+              -
+                Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: '*'
 
   NotificationTopic:
     Type: "AWS::SNS::Topic"

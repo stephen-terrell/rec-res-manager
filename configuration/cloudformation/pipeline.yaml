@@ -290,23 +290,20 @@ Resources:
                   - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe/*"
               -
                 Action:
-                  - 'sns:CreateTopic'
-                  - 'sns:Subscribe'
-                  - 'sns:GetTopicAttributes'
+                  - 'sns:*'
                 Effect: Allow
                 Resource:
                   - '*'
               -
                 Action:
                   - 's3:CreateBucket'
+                  - 's3:DeleteBucket'
                 Effect: Allow
                 Resource:
                   - '*'
               -
                 Action:
-                  - 'events:PutRule'
-                  - 'events:PutRuleTargets'
-                  - 'events:DescribeRule'
+                  - 'events:*'
                 Effect: Allow
                 Resource:
                   - '*'
