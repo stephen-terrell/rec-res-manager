@@ -17,7 +17,7 @@ Resources:
       Role: !GetAtt LambdaRole.Arn
       Handler: src/handler/check_requested_reservations.handler
       Timeout: 10
-      MemorySize: 128
+      MemorySize: 192
       Code:
         S3Bucket: !Ref buildArtifactBucketName
         S3Key: !Ref buildArtifactObjectKey
@@ -73,6 +73,9 @@ Resources:
       Subscription:
         -
           Endpoint: stephen.terrell14+rec-res@gmail.com
+          Protocol: email
+        -
+          Endpoint: carcardk+rec-res@gmail.com
           Protocol: email
 
   ConfigBucket:
