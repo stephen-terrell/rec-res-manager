@@ -72,7 +72,7 @@ Resources:
       TopicName: rec-res-notification-carly-stephen
       Subscription:
         -
-          Endpoint: stephen.terrell14+rec-res@gmail.com
+          Endpoint: stephenterrell14@icloud.com
           Protocol: email
         -
           Endpoint: carcardk+rec-res@gmail.com

@@ -31,9 +31,48 @@ camp_configs = [
         },
         'campgrounds': [
             {
-                'campgroundId': '232445',
+                'campgroundId': '232445',  # Zion - Watchman
+                'checkInDate': '05/01/2022',
+                'checkOutDate': '05/05/2022',
+                'allowRvLikeSites': False,
+                'notificationPreferences': {
+                    'notificationsEnabled': True,
+                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
+                },
+                'autoBookPreferences': {
+                    'attemptAutoBook': True,
+                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
+                },
+            }, {
+                'campgroundId': '272300',  # J-Tree - Jumbo Rocks
                 'checkInDate': '04/01/2022',
-                'checkOutDate': '04/05/2022',
+                'checkOutDate': '04/03/2022',
+                'allowRvLikeSites': False,
+                'notificationPreferences': {
+                    'notificationsEnabled': True,
+                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
+                },
+                'autoBookPreferences': {
+                    'attemptAutoBook': True,
+                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
+                },
+            }, {
+                'campgroundId': '232472',  # J-Tree - Indian Cove
+                'checkInDate': '04/01/2022',
+                'checkOutDate': '04/03/2022',
+                'allowRvLikeSites': False,
+                'notificationPreferences': {
+                    'notificationsEnabled': True,
+                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
+                },
+                'autoBookPreferences': {
+                    'attemptAutoBook': True,
+                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
+                },
+            }, {
+                'campgroundId': '232473',  # J-Tree - Black Rock
+                'checkInDate': '04/01/2022',
+                'checkOutDate': '04/03/2022',
                 'allowRvLikeSites': False,
                 'notificationPreferences': {
                     'notificationsEnabled': True,

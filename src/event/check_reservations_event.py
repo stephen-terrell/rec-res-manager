@@ -37,11 +37,11 @@ class CheckReservationsEvent:
         self.__allowed_campsite_types = [
             CampsiteType.STANDARD_NONELECTRIC,
             CampsiteType.TENT_ONLY_NONELECTRIC,
+            CampsiteType.STANDARD_ELECTRIC,
+            CampsiteType.TENT_ONLY_ELECTRIC,
         ]
         self.__rv_like_campsites = [
             CampsiteType.RV_ELECTRIC,
-            CampsiteType.STANDARD_ELECTRIC,
-            CampsiteType.RV_ELECTRIC
         ]
 
     def handle(self):
