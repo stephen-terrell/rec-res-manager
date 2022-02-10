@@ -49,8 +49,17 @@ class RecreationProxy:
             'start_date': start_date.strftime('%Y-%m-01T00:00:00.000Z')
         }
 
-        return requests.get(
+        get_request = requests.get(
             url_pattern.format(campground_id=campground_id),
             params=params,
             headers=self.__headers
-        ).json()
+        )
+
+        if not get_request.ok:
+            print('===== Error getting data from recreation api =====')
+            print(f'Status code: {get_request.status_code}')
+            print(f'Reason: "{get_request.reason}"')
+
+            return None
+
+        return get_request.json()

@@ -59,6 +59,11 @@ class CheckReservationsEvent:
                     end_date=campground_config.check_out_date
                 )
 
+                if not requested_campground_availability:
+                    print('Probably got an error from recreation api. will retry next go.')
+
+                    continue
+
                 for campsite_id, campsite_availability in requested_campground_availability.get('campsites').items():
                     campsite_type = CampsiteType(campsite_availability.get('campsite_type'))
 
