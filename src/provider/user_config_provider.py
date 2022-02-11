@@ -33,7 +33,7 @@ camp_configs = [
             {
                 'campgroundId': '232445',  # Zion - Watchman
                 'checkInDate': '05/01/2022',
-                'checkOutDate': '05/05/2022',
+                'checkOutDate': '05/06/2022',
                 'allowRvLikeSites': False,
                 'notificationPreferences': {
                     'notificationsEnabled': True,
