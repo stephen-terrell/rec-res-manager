@@ -31,19 +31,6 @@ camp_configs = [
         },
         'campgrounds': [
             {
-                'campgroundId': '232445',  # Zion - Watchman
-                'checkInDate': '05/01/2022',
-                'checkOutDate': '05/06/2022',
-                'allowRvLikeSites': False,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
                 'campgroundId': '272300',  # J-Tree - Jumbo Rocks
                 'checkInDate': '04/01/2022',
                 'checkOutDate': '04/03/2022',
