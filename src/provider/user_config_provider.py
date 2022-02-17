@@ -44,22 +44,9 @@ camp_configs = [
                     'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
                 },
             }, {
-                'campgroundId': '232472',  # J-Tree - Indian Cove
-                'checkInDate': '04/01/2022',
-                'checkOutDate': '04/03/2022',
-                'allowRvLikeSites': False,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
-                'campgroundId': '232473',  # J-Tree - Black Rock
-                'checkInDate': '04/01/2022',
-                'checkOutDate': '04/03/2022',
+                'campgroundId': '234059',  # Arches - Devils Garden
+                'checkInDate': '05/24/2022',
+                'checkOutDate': '05/27/2022',
                 'allowRvLikeSites': False,
                 'notificationPreferences': {
                     'notificationsEnabled': True,
