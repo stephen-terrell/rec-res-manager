@@ -11,6 +11,6 @@ class SnsProxy:
     def send_notification(self, owner: str, message: str):
         topic = self.__sns_resource.Topic(self.__arn_pattern.format(owner=owner))
         topic.publish(
-            Subject='Found campsite availability',
+            Subject='Found campground availability',
             Message=message
         )

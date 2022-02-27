@@ -10,7 +10,7 @@ class EmailFormatter:
     def get_formatted_message(self, campground_availabilities: List[CampgroundAvailability]):
         message_parts = [
             'Hello!\n\n',
-            'Availability found for your requested campsite(s). Good luck!\n\n\n'
+            'Availability found for your requested campground(s). Good luck!\n\n\n'
         ]
 
         for campground_availability in campground_availabilities:
