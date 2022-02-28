@@ -57,19 +57,6 @@ camp_configs = [
                     'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
                 },
             }, {
-                'campgroundId': '272245',  # Capital Reef - Fruita
-                'checkInDate': '05/09/2022',
-                'checkOutDate': '05/12/2022',
-                'allowRvLikeSites': False,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
                 'campgroundId': '233187',  # Rocky Mountain - Aspenglen
                 'checkInDate': '06/17/2022',
                 'checkOutDate': '06/19/2022',
