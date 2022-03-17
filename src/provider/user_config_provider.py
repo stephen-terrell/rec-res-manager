@@ -45,20 +45,7 @@ camp_configs = [
                 },
             }, {
                 'campgroundId': '233187',  # Rocky Mountain - Aspenglen
-                'checkInDate': '06/17/2022',
-                'checkOutDate': '06/19/2022',
-                'allowRvLikeSites': False,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
-                'campgroundId': '232463',  # Rocky Mountain - Moraine
-                'checkInDate': '06/17/2022',
+                'checkInDate': '06/15/2022',
                 'checkOutDate': '06/19/2022',
                 'allowRvLikeSites': False,
                 'notificationPreferences': {
@@ -71,7 +58,7 @@ camp_configs = [
                 },
             }, {
                 'campgroundId': '232462',  # Rocky Mountain - Glacier Basin
-                'checkInDate': '06/17/2022',
+                'checkInDate': '06/15/2022',
                 'checkOutDate': '06/19/2022',
                 'allowRvLikeSites': False,
                 'notificationPreferences': {
