@@ -31,9 +31,9 @@ camp_configs = [
         },
         'campgrounds': [
             {
-                'campgroundId': '234059',  # Arches - Devils Garden
-                'checkInDate': '05/24/2022',
-                'checkOutDate': '05/27/2022',
+                'campgroundId': '251535',  # Canyonlands - Needles
+                'checkInDate': '05/26/2022',
+                'checkOutDate': '05/30/2022',
                 'allowRvLikeSites': False,
                 'notificationPreferences': {
                     'notificationsEnabled': True,
