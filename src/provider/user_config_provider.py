@@ -31,9 +31,9 @@ camp_configs = [
         },
         'campgrounds': [
             {
-                'campgroundId': '251535',  # Canyonlands - Needles
-                'checkInDate': '05/26/2022',
-                'checkOutDate': '05/30/2022',
+                'campgroundId': '234685',  # Great Sand Dunes - Pinon Flats
+                'checkInDate': '05/18/2022',
+                'checkOutDate': '05/20/2022',
                 'allowRvLikeSites': False,
                 'notificationPreferences': {
                     'notificationsEnabled': True,
