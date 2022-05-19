@@ -31,9 +31,35 @@ camp_configs = [
         },
         'campgrounds': [
             {
-                'campgroundId': '234685',  # Great Sand Dunes - Pinon Flats
-                'checkInDate': '05/18/2022',
-                'checkOutDate': '05/20/2022',
+                'campgroundId': '10101362',  # Great Basin - Lower Lehman Creek
+                'checkInDate': '05/30/2022',
+                'checkOutDate': '06/02/2022',
+                'allowRvLikeSites': False,
+                'notificationPreferences': {
+                    'notificationsEnabled': True,
+                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
+                },
+                'autoBookPreferences': {
+                    'attemptAutoBook': True,
+                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
+                },
+            }, {
+                'campgroundId': '10101374',  # Great Basin - Upper Lehman Creek
+                'checkInDate': '05/30/2022',
+                'checkOutDate': '06/02/2022',
+                'allowRvLikeSites': False,
+                'notificationPreferences': {
+                    'notificationsEnabled': True,
+                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
+                },
+                'autoBookPreferences': {
+                    'attemptAutoBook': True,
+                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
+                },
+            }, {
+                'campgroundId': '234039',  # Lassen Volcanic - Manzanita Lake
+                'checkInDate': '06/05/2022',
+                'checkOutDate': '06/08/2022',
                 'allowRvLikeSites': False,
                 'notificationPreferences': {
                     'notificationsEnabled': True,
