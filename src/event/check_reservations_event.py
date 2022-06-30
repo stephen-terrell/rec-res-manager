@@ -39,6 +39,7 @@ class CheckReservationsEvent:
             CampsiteType.TENT_ONLY_NONELECTRIC,
             CampsiteType.STANDARD_ELECTRIC,
             CampsiteType.TENT_ONLY_ELECTRIC,
+            CampsiteType.SHELTER_NONELECTRIC,
         ]
         self.__rv_like_campsites = [
             CampsiteType.RV_ELECTRIC,
@@ -94,6 +95,9 @@ class CheckReservationsEvent:
 
                 if len(campground_availability.get_campsites()) > 0:
                     campground_availabilities.append(campground_availability)
+                else:
+                    print("found no availabilities for campground: {campground_id}".format(
+                        campground_id=campground_config.campground_id))
 
             # we found something we should tell the customer about
             if len(campground_availabilities) > 0:
@@ -109,7 +113,6 @@ class CheckReservationsEvent:
 
         if len(notification_config_update.items()):
             self._notification_config_provider.update_notification_config(notification_config_update)
-
 
     def __notify_found_availabilities(self, owner: str, campground_availabilities: List[CampgroundAvailability]):
         message_string = self._email_formatter.get_formatted_message(campground_availabilities)

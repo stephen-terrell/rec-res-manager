@@ -31,10 +31,10 @@ camp_configs = [
         },
         'campgrounds': [
             {
-                'campgroundId': '10101362',  # Great Basin - Lower Lehman Creek
-                'checkInDate': '05/30/2022',
-                'checkOutDate': '06/02/2022',
-                'allowRvLikeSites': False,
+                'campgroundId': '251869',  # Glacier - Many Glacier
+                'checkInDate': '07/28/2022',
+                'checkOutDate': '07/30/2022',
+                'allowRvLikeSites': True,
                 'notificationPreferences': {
                     'notificationsEnabled': True,
                     'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
@@ -44,10 +44,10 @@ camp_configs = [
                     'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
                 },
             }, {
-                'campgroundId': '10101374',  # Great Basin - Upper Lehman Creek
-                'checkInDate': '05/30/2022',
-                'checkOutDate': '06/02/2022',
-                'allowRvLikeSites': False,
+                'campgroundId': '232492',  # Glacier - St. Mary
+                'checkInDate': '07/28/2022',
+                'checkOutDate': '08/01/2022',
+                'allowRvLikeSites': True,
                 'notificationPreferences': {
                     'notificationsEnabled': True,
                     'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
@@ -57,10 +57,36 @@ camp_configs = [
                     'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
                 },
             }, {
-                'campgroundId': '234039',  # Lassen Volcanic - Manzanita Lake
-                'checkInDate': '06/05/2022',
-                'checkOutDate': '06/08/2022',
-                'allowRvLikeSites': False,
+                'campgroundId': '258795',  # Glacier - Sprague Creek
+                'checkInDate': '08/01/2022',
+                'checkOutDate': '08/04/2022',
+                'allowRvLikeSites': True,
+                'notificationPreferences': {
+                    'notificationsEnabled': True,
+                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
+                },
+                'autoBookPreferences': {
+                    'attemptAutoBook': True,
+                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
+                },
+            }, {
+                'campgroundId': '10171274',  # Glacier - Apgar
+                'checkInDate': '08/01/2022',
+                'checkOutDate': '08/04/2022',
+                'allowRvLikeSites': True,
+                'notificationPreferences': {
+                    'notificationsEnabled': True,
+                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
+                },
+                'autoBookPreferences': {
+                    'attemptAutoBook': True,
+                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
+                },
+            }, {
+                'campgroundId': '232493',  # Glacier - Fish Creek
+                'checkInDate': '08/01/2022',
+                'checkOutDate': '08/04/2022',
+                'allowRvLikeSites': True,
                 'notificationPreferences': {
                     'notificationsEnabled': True,
                     'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',

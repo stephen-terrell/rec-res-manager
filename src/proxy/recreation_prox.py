@@ -1,4 +1,5 @@
 import requests
+import time
 from datetime import datetime
 
 
@@ -30,6 +31,7 @@ class RecreationProxy:
         return availability
 
     def get_campground_name(self, campground_id: str) -> dict:
+        time.sleep(0.1)
         url_pattern = 'https://www.recreation.gov/api/camps/campgrounds/{campground_id}'
 
         result = requests.get(
@@ -43,6 +45,7 @@ class RecreationProxy:
         }
 
     def __get_campground_availability(self, campground_id: str, start_date) -> dict:
+        time.sleep(0.1)
         url_pattern = 'https://www.recreation.gov/api/camps/availability/campground/{campground_id}/month'
 
         params = {
