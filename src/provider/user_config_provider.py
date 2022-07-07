@@ -44,46 +44,7 @@ camp_configs = [
                     'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
                 },
             }, {
-                'campgroundId': '232492',  # Glacier - St. Mary
-                'checkInDate': '07/28/2022',
-                'checkOutDate': '08/01/2022',
-                'allowRvLikeSites': True,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
                 'campgroundId': '258795',  # Glacier - Sprague Creek
-                'checkInDate': '08/01/2022',
-                'checkOutDate': '08/04/2022',
-                'allowRvLikeSites': True,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
-                'campgroundId': '10171274',  # Glacier - Apgar
-                'checkInDate': '08/01/2022',
-                'checkOutDate': '08/04/2022',
-                'allowRvLikeSites': True,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
-                'campgroundId': '232493',  # Glacier - Fish Creek
                 'checkInDate': '08/01/2022',
                 'checkOutDate': '08/04/2022',
                 'allowRvLikeSites': True,
