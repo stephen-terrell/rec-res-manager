@@ -31,9 +31,9 @@ camp_configs = [
         },
         'campgrounds': [
             {
-                'campgroundId': '251869',  # Glacier - Many Glacier
-                'checkInDate': '07/28/2022',
-                'checkOutDate': '07/30/2022',
+                'campgroundId': '258795',  # Glacier - Sprague Creek
+                'checkInDate': '08/01/2022',
+                'checkOutDate': '08/04/2022',
                 'allowRvLikeSites': True,
                 'notificationPreferences': {
                     'notificationsEnabled': True,
@@ -44,9 +44,35 @@ camp_configs = [
                     'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
                 },
             }, {
-                'campgroundId': '258795',  # Glacier - Sprague Creek
-                'checkInDate': '08/01/2022',
-                'checkOutDate': '08/04/2022',
+                'campgroundId': '246852',  # North Cascades - Gooddell Creek
+                'checkInDate': '08/07/2022',
+                'checkOutDate': '08/11/2022',
+                'allowRvLikeSites': True,
+                'notificationPreferences': {
+                    'notificationsEnabled': True,
+                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
+                },
+                'autoBookPreferences': {
+                    'attemptAutoBook': True,
+                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
+                },
+            }, {
+                'campgroundId': '234060',  # North Cascades - Newhalem
+                'checkInDate': '08/07/2022',
+                'checkOutDate': '08/11/2022',
+                'allowRvLikeSites': True,
+                'notificationPreferences': {
+                    'notificationsEnabled': True,
+                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
+                },
+                'autoBookPreferences': {
+                    'attemptAutoBook': True,
+                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
+                },
+            }, {
+                'campgroundId': '10004932',  # North Cascades - Gorge Lake
+                'checkInDate': '08/07/2022',
+                'checkOutDate': '08/11/2022',
                 'allowRvLikeSites': True,
                 'notificationPreferences': {
                     'notificationsEnabled': True,
