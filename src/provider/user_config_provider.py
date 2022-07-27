@@ -43,45 +43,6 @@ camp_configs = [
                     'attemptAutoBook': True,
                     'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
                 },
-            }, {
-                'campgroundId': '246852',  # North Cascades - Gooddell Creek
-                'checkInDate': '08/07/2022',
-                'checkOutDate': '08/11/2022',
-                'allowRvLikeSites': True,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
-                'campgroundId': '234060',  # North Cascades - Newhalem
-                'checkInDate': '08/07/2022',
-                'checkOutDate': '08/11/2022',
-                'allowRvLikeSites': True,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
-                'campgroundId': '10004932',  # North Cascades - Gorge Lake
-                'checkInDate': '08/07/2022',
-                'checkOutDate': '08/11/2022',
-                'allowRvLikeSites': True,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
             }
         ],
         'permits': [
