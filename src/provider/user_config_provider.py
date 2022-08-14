@@ -82,32 +82,6 @@ camp_configs = [
                     'attemptAutoBook': True,
                     'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
                 },
-            }, {
-                'campgroundId': '232465',  # Mt. Rainier - Ohanapecosh
-                'checkInDate': '08/23/2022',
-                'checkOutDate': '08/24/2022',
-                'allowRvLikeSites': True,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
-                'campgroundId': '232466',  # Mt. Rainier - Cougar Rock
-                'checkInDate': '08/24/2022',
-                'checkOutDate': '08/25/2022',
-                'allowRvLikeSites': True,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
             }
         ],
         'permits': [
