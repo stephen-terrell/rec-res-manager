@@ -10,11 +10,12 @@ phases:
     commands:
       - python -m unittest discover -s tst
 artifacts:
-  files:
-    - '**/*'
-  name: 'buildArtifact'
   secondary-artifacts:
+    buildArtifact:
+      files:
+        - '**/*'
+      name: buildArtifact
     configArtifact:
       files:
         - 'user-config.json'
-      name: 'configArtifact'
+      name: configArtifact
