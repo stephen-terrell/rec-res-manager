@@ -12,6 +12,7 @@ phases:
 artifacts:
   files:
     - '**/*'
+  name: 'buildArtifact'
   secondary-artifacts:
     configArtifact:
       files:
