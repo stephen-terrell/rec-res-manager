@@ -12,3 +12,8 @@ phases:
 artifacts:
   files:
     - '**/*'
+  name: 'build-artifact'
+  secondary-artifacts:
+    files:
+      - 'user-config.json'
+    name: 'config-artifact'
