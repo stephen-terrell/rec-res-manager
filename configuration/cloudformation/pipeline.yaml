@@ -28,8 +28,7 @@ Resources:
                 OutputArtifactFormat: CODE_ZIP
               Namespace: SourceVariables
               OutputArtifacts:
-                -
-                  Name: SourceArtifact
+                - Name: sourceArtifact
               RunOrder: 1
         -
           Name: Build
@@ -45,15 +44,29 @@ Resources:
                 ProjectName: rec-res-service-build
               Namespace: BuildVariables
               InputArtifacts:
-                -
-                  Name: SourceArtifact
+                - Name: sourceArtifact
               OutputArtifacts:
-                - Name: BuildArtifact
+                - Name: buildArtifact
+                - Name: configArtifact
               Region: us-west-2
               RunOrder: 1
         -
           Name: Deploy
           Actions:
+            -
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: S3
+                Version: 1
+              Configuration:
+                BucketName: !Ref ConfigBucket
+                ObjectKey: user-config
+                Extract: Yes
+              InputArtifacts:
+                - Name: configArtifact
+              Name: PushUserConfigToS3
+              RunOrder: 1
             -
               ActionTypeId:
                 Category: Deploy
@@ -66,14 +79,14 @@ Resources:
                 ChangeSetName: service-stack-changeset
                 ParameterOverrides: |
                   {
-                    "buildArtifactBucketName": { "Fn::GetArtifactAtt": ["BuildArtifact", "BucketName"]},
-                    "buildArtifactObjectKey": { "Fn::GetArtifactAtt": ["BuildArtifact", "ObjectKey"]}
+                    "buildArtifactBucketName": { "Fn::GetArtifactAtt": ["buildArtifact", "BucketName"]},
+                    "buildArtifactObjectKey": { "Fn::GetArtifactAtt": ["buildArtifact", "ObjectKey"]}
                   }
                 RoleArn: !GetAtt CloudFormationTrustRole.Arn
                 StackName: rec-res-service-stack
-                TemplatePath: BuildArtifact::configuration/cloudformation/service-stack.yml
+                TemplatePath: buildArtifact::configuration/cloudformation/service-stack.yml
               InputArtifacts:
-              - Name: BuildArtifact
+                - Name: buildArtifact
               Name: GenerateChangeSet
               RunOrder: 1
             -
@@ -98,8 +111,6 @@ Resources:
         BuildSpec: configuration/codebuild/buildspec.yml
       Artifacts:
         Type: CODEPIPELINE
-        Name: rec-res-service-build
-        Packaging: NONE
       Cache:
         Type: NO_CACHE
       Environment:
@@ -118,6 +129,13 @@ Resources:
           Status: DISABLED
           EncryptionDisabled: false
       Visibility: PRIVATE
+
+  ConfigBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Join
+        - '-'
+        - [ 'rec-res-config', !Ref "AWS::Region", !Ref "AWS::AccountId" ]
 
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
@@ -149,8 +167,8 @@ Resources:
                 Action:
                   - "s3:*" # this is bad, but i cannot for the life of me figure out what perms github needs here
                 Resource:
-                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe"
-                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe/*"
+                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937"
+                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/*"
 
       MaxSessionDuration: 3600
       Path: "/service-role/"
@@ -204,8 +222,17 @@ Resources:
                 Action:
                   - "s3:*" # this is bad, but i cannot for the life of me figure out what perms github needs here
                 Resource:
-                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe"
-                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe/*"
+                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937"
+                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/*"
+              -
+                Effect: "Allow"
+                Action:
+                  - "s3:Put*"
+                Resource:
+                  - !GetAtt ConfigBucket.Arn
+                  - !Join
+                    - ''
+                    - [ !GetAtt ConfigBucket.Arn, '/*' ]
               -
                 Effect: "Allow"
                 Action:
@@ -286,8 +313,8 @@ Resources:
                   - s3:GetObject
                 Effect: Allow
                 Resource:
-                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe"
-                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/rec-res-manager-pipe/*"
+                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937"
+                  - "arn:aws:s3:::codepipeline-us-west-2-789836859937/*"
               -
                 Action:
                   - 'sns:*'

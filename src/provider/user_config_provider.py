@@ -43,45 +43,6 @@ camp_configs = [
                     'attemptAutoBook': True,
                     'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
                 },
-            }, {
-                'campgroundId': '247591',  # Olympic - Mora
-                'checkInDate': '08/18/2022',
-                'checkOutDate': '08/19/2022',
-                'allowRvLikeSites': True,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
-                'campgroundId': '247592',  # Olympic - Hoh
-                'checkInDate': '08/19/2022',
-                'checkOutDate': '08/20/2022',
-                'allowRvLikeSites': True,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
-            }, {
-                'campgroundId': '232464',  # Olympic - Kalaloch
-                'checkInDate': '08/20/2022',
-                'checkOutDate': '08/21/2022',
-                'allowRvLikeSites': True,
-                'notificationPreferences': {
-                    'notificationsEnabled': True,
-                    'notificationSensitivityLevel': 'ANY_DAYS_AVAILABLE',
-                },
-                'autoBookPreferences': {
-                    'attemptAutoBook': True,
-                    'autoBookSensitivityLevel': 'ALL_DAYS_AVAILABLE',
-                },
             }
         ],
         'permits': [
