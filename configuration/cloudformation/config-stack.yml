@@ -1,0 +1,100 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Config handler stack for recreation reservation manager service
+
+Parameters:
+  buildArtifactBucketName:
+    Type: String
+  buildArtifactObjectKey:
+    Type: String
+  configBucketName:
+    Type: String
+  configBucketArn:
+    Type: String
+  codePipelineArn:
+    Type: String
+
+Outputs:
+  ProcessUserConfigLambdaName:
+    Description: The name of the process user config lambda
+    Value: !Ref ProcessConfigLambda
+    Export:
+      Name: 'RecResProcessUserConfigLambdaName'
+
+Resources:
+  ProcessConfigLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: rec-res-process-user-config-file
+      Runtime: python3.9
+      Role: !GetAtt LambdaRole.Arn
+      Handler: src/handler/process_user_config.handler
+      Timeout: 60
+      MemorySize: 256
+      Code:
+        S3Bucket: !Ref buildArtifactBucketName
+        S3Key: !Ref buildArtifactObjectKey
+      Environment:
+        Variables:
+          CONFIG_BUCKET_NAME: !Ref configBucketName
+          AWS_ACCOUNT_ID: !Ref "AWS::AccountId"
+
+  LambdaRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: rec-res-config-lambda-role
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: rec-res-config-lambda-policy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "s3:GetObject"
+                  - "s3:PutObject"
+                Resource:
+                  - !Ref configBucketArn
+                  - !Join
+                    - ""
+                    - [ !Ref configBucketArn, "/*" ]
+              - Effect: "Allow"
+                Action:
+                  - "sns:List*"
+                  - "sns:Get*"
+                  - "sns:CreateTopic"
+                  - "sns:DeleteTopic"
+                  - "sns:SetSubscriptionAttributes"
+                  - "sns:SetTopicAttributes"
+                  - "sns:Subscribe"
+                  - "sns:Unsubscribe"
+                Resource: !Join
+                  - ":"
+                  - [ "arn:aws:sns", !Ref "AWS::Region", !Ref "AWS::AccountId", "rec-res-notification-*" ]
+              - Effect: "Allow"
+                Action:
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                Resource: "arn:aws:logs:*:*:*"
+              - Effect: "Allow"
+                Action:
+                  - "codepipeline:PutJobSuccessResult"
+                  - "codepipeline:PutJobFailureResult"
+                Resource: "arn:aws:codepipeline:us-west-2:379689532145:*"
+
+  PermissionForCodePipelineToInvokeLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref "ProcessConfigLambda"
+      Action: "lambda:InvokeFunction"
+      Principal: "codepipeline.amazonaws.com"
+      SourceAccount: !Ref 'AWS::AccountId'

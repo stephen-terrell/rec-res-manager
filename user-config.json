@@ -5,7 +5,41 @@
       "version": 1,
       "subscriptions": [
         {
-          "endpoint": "something@gmail.com",
+          "endpoint": "scubastevegcn@gmail.com",
+          "protocol": "email"
+        }
+      ],
+      "autoBookCredentials": {
+        "enc": ""
+      },
+      "campgrounds": [
+        {
+          "campgroundId": "251906",
+          "checkInDate": "08/15/2022",
+          "checkOutDate": "08/17/2022",
+          "allowRvLikeSites": true,
+          "notificationPreferences": {
+            "notificationsEnabled": true,
+            "notificationSensitivityLevel": "ANY_DAYS_AVAILABLE"
+          },
+          "autoBookPreferences": {
+            "attemptAutoBook": true,
+            "autoBookSensitivityLevel": "ALL_DAYS_AVAILABLE"
+          }
+        }
+      ],
+      "permits": [
+        {
+          "coming": "soon"
+        }
+      ]
+    },
+    {
+      "owner": "another-one",
+      "version": 1,
+      "subscriptions": [
+        {
+          "endpoint": "scubastevegcn+12345@gmail.com",
           "protocol": "email"
         }
       ],

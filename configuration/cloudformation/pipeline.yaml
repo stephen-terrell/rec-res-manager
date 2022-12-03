@@ -1,15 +1,25 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: CodePipelin for res-rec-manager service
+Description: CodePipeline for res-rec-manager service
+Outputs:
+  ConfigBucketName:
+    Description: The name of the config bucket
+    Value: !Ref ConfigBucket
+    Export:
+      Name: 'RecResConfigBucketName'
+  ConfigBucketArn:
+    Description: The arn of the config bucket
+    Value: !GetAtt ConfigBucket.Arn
+    Export:
+      Name: 'RecResConfigBucketArn'
 Resources:
-  CodePipeline:
+  CodePipelineMain:
     Type: "AWS::CodePipeline::Pipeline"
     Properties:
       RoleArn: !GetAtt CodePipelineServiceRole.Arn
       ArtifactStore:
         Type: S3
         Location: codepipeline-us-west-2-789836859937
-
       Stages:
         -
           Name: Source
@@ -51,10 +61,9 @@ Resources:
               Region: us-west-2
               RunOrder: 1
         -
-          Name: Deploy
+          Name: DeployConfigStack
           Actions:
-            -
-              ActionTypeId:
+            - ActionTypeId:
                 Category: Deploy
                 Owner: AWS
                 Provider: S3
@@ -67,6 +76,56 @@ Resources:
                 - Name: configArtifact
               Name: PushUserConfigToS3
               RunOrder: 1
+            - ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              Configuration:
+                ActionMode: CHANGE_SET_REPLACE
+                Capabilities: CAPABILITY_NAMED_IAM
+                ChangeSetName: config-stack-change-set
+                ParameterOverrides: !Sub |
+                  {
+                    "buildArtifactBucketName": { "Fn::GetArtifactAtt": ["buildArtifact", "BucketName"]},
+                    "buildArtifactObjectKey": { "Fn::GetArtifactAtt": ["buildArtifact", "ObjectKey"]},
+                    "configBucketName": "${ConfigBucket}",
+                    "configBucketArn": "${ConfigBucket.Arn}"
+                  }
+                RoleArn: !GetAtt CloudFormationTrustRole.Arn
+                StackName: rec-res-config-stack
+                TemplatePath: buildArtifact::configuration/cloudformation/config-stack.yml
+              InputArtifacts:
+                - Name: buildArtifact
+              Name: GenerateConfigStackChangeSet
+              RunOrder: 1
+            - ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Provider: CloudFormation
+                Version: 1
+              Configuration:
+                ActionMode: CHANGE_SET_EXECUTE
+                ChangeSetName: config-stack-change-set
+                StackName: rec-res-config-stack
+              Name: ExecuteConfigStackChangeSet
+              RunOrder: 2
+        -
+          Name: ProcessUserConfig
+          Actions:
+            -
+              ActionTypeId:
+                Category: Invoke
+                Owner: AWS
+                Provider: Lambda
+                Version: 1
+              Configuration:
+                FunctionName: ${DeployConfigStack.RecResProcessUserConfigLambdaName}
+              Name: InvokeProcessUserConfigLambda
+              RunOrder: 1
+        -
+          Name: DeployServiceStack
+          Actions:
             -
               ActionTypeId:
                 Category: Deploy
@@ -76,7 +135,7 @@ Resources:
               Configuration:
                 ActionMode: CHANGE_SET_REPLACE
                 Capabilities: CAPABILITY_NAMED_IAM
-                ChangeSetName: service-stack-changeset
+                ChangeSetName: service-stack-change-set
                 ParameterOverrides: |
                   {
                     "buildArtifactBucketName": { "Fn::GetArtifactAtt": ["buildArtifact", "BucketName"]},
@@ -87,7 +146,7 @@ Resources:
                 TemplatePath: buildArtifact::configuration/cloudformation/service-stack.yml
               InputArtifacts:
                 - Name: buildArtifact
-              Name: GenerateChangeSet
+              Name: GenerateServiceStackChangeSet
               RunOrder: 1
             -
               ActionTypeId:
@@ -97,9 +156,9 @@ Resources:
                 Version: 1
               Configuration:
                 ActionMode: CHANGE_SET_EXECUTE
-                ChangeSetName: service-stack-changeset
+                ChangeSetName: service-stack-change-set
                 StackName: rec-res-service-stack
-              Name: ExecuteChangeSet
+              Name: ExecuteServiceStackChangeSet
               RunOrder: 2
 
   CodeBuild:

@@ -7,6 +7,10 @@ Parameters:
     Type: String
   buildArtifactObjectKey:
     Type: String
+  configBucketName:
+    Type: String
+  configBucketArn:
+    Type: String
 
 Resources:
   CheckReservationsLambda:
@@ -45,13 +49,15 @@ Resources:
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              -
-                Effect: "Allow"
+              - Effect: "Allow"
                 Action:
                   - "s3:GetObject"
                   - "s3:PutObject"
                 Resource:
-                  - "*"
+                  - !Ref configBucketArn
+                  - !Join
+                    - ''
+                    - [ !Ref configBucketArn, '/*' ]
               -
                 Effect: "Allow"
                 Action:
@@ -66,18 +72,6 @@ Resources:
                   - "logs:PutLogEvents"
                 Resource: '*'
 
-  NotificationTopic:
-    Type: "AWS::SNS::Topic"
-    Properties:
-      TopicName: rec-res-notification-carly-stephen
-      Subscription:
-        -
-          Endpoint: stephenterrell14@icloud.com
-          Protocol: email
-        -
-          Endpoint: carcardk+rec-res@gmail.com
-          Protocol: email
-
   ConfigBucket:
     Type: "AWS::S3::Bucket"
     Properties:
@@ -90,7 +84,7 @@ Resources:
     Properties:
       Name: check-reservations-event-rule
       ScheduleExpression: "cron(* * * * ? *)"
-      State: "ENABLED"
+      State: "DISABLED"
       Targets:
         -
           Arn:

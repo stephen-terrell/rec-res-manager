@@ -4,7 +4,6 @@ from src.model.enum.protocol_type import ProtocolType
 
 
 @dataclass
-class PermitReservationConfigV1:
-    permit_id: int
-    protocol: ProtocolType
-
+class SubscriptionConfig:
+    endpoint: str
+    protocol_type: ProtocolType
