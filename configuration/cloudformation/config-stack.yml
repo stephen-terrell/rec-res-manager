@@ -92,8 +92,7 @@ Resources:
                 Action:
                   - "codepipeline:PutJobSuccessResult"
                   - "codepipeline:PutJobFailureResult"
-                  - "codepipeline:PutJobSuccessResult"
-                Resource: "arn:aws:codepipeline:us-west-2:379689532145:*"
+                Resource: "*"
 
   PermissionForCodePipelineToInvokeLambda:
     Type: AWS::Lambda::Permission
