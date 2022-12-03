@@ -68,6 +68,11 @@ Resources:
                 Action:
                   - "sns:List*"
                   - "sns:Get*"
+                Resource: "*"
+              - Effect: "Allow"
+                Action:
+                  - "sns:List*"
+                  - "sns:Get*"
                   - "sns:CreateTopic"
                   - "sns:DeleteTopic"
                   - "sns:SetSubscriptionAttributes"

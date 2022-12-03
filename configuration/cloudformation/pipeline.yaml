@@ -108,6 +108,7 @@ Resources:
                 ActionMode: CHANGE_SET_EXECUTE
                 ChangeSetName: config-stack-change-set
                 StackName: rec-res-config-stack
+              Namespace: ConfigStackChangeSet
               Name: ExecuteConfigStackChangeSet
               RunOrder: 2
         -
@@ -120,7 +121,7 @@ Resources:
                 Provider: Lambda
                 Version: 1
               Configuration:
-                FunctionName: ${DeployConfigStack.RecResProcessUserConfigLambdaName}
+                FunctionName: "#{ConfigStackChangeSet.ProcessUserConfigLambdaName}"
               Name: InvokeProcessUserConfigLambda
               RunOrder: 1
         -
@@ -312,6 +313,13 @@ Resources:
                   - "iam:PassRole"
                 Resource:
                   - !GetAtt CloudFormationTrustRole.Arn
+              -
+                Effect: "Allow"
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource: !Join
+                  - ":"
+                  - [ "arn:aws:lambda", !Ref "AWS::Region", !Ref "AWS::AccountId", "function:rec-res-process-user-config-file" ]
       MaxSessionDuration: 3600
       Path: "/service-role/"
       RoleName: rec-res-codepipeline-service-role
