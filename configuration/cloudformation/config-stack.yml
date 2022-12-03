@@ -11,8 +11,6 @@ Parameters:
     Type: String
   configBucketArn:
     Type: String
-  codePipelineArn:
-    Type: String
 
 Outputs:
   ProcessUserConfigLambdaName:
