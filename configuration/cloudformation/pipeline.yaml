@@ -140,7 +140,9 @@ Resources:
                 ParameterOverrides: |
                   {
                     "buildArtifactBucketName": { "Fn::GetArtifactAtt": ["buildArtifact", "BucketName"]},
-                    "buildArtifactObjectKey": { "Fn::GetArtifactAtt": ["buildArtifact", "ObjectKey"]}
+                    "buildArtifactObjectKey": { "Fn::GetArtifactAtt": ["buildArtifact", "ObjectKey"]},
+                    "configBucketName": "${ConfigBucket}",
+                    "configBucketArn": "${ConfigBucket.Arn}"
                   }
                 RoleArn: !GetAtt CloudFormationTrustRole.Arn
                 StackName: rec-res-service-stack
