@@ -231,7 +231,12 @@ Resources:
                 Resource:
                   - "arn:aws:s3:::codepipeline-us-west-2-789836859937"
                   - "arn:aws:s3:::codepipeline-us-west-2-789836859937/*"
-
+              -
+                Effect: "Allow"
+                Action:
+                  - "codebuild:CreateReportGroup"
+                Resource:
+                  - "*"
       MaxSessionDuration: 3600
       Path: "/service-role/"
       RoleName: rec-res-code-build-service-role
