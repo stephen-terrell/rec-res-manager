@@ -234,7 +234,11 @@ Resources:
               -
                 Effect: "Allow"
                 Action:
+                  - "codebuild:CreateReport"
                   - "codebuild:CreateReportGroup"
+                  - "codebuild:BatchPutCodeCoverages"
+                  - "codebuild:BatchPutTestCases"
+                  - "codebuild:UpdateReport"
                 Resource:
                   - "*"
       MaxSessionDuration: 3600
