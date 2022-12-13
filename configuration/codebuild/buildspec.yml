@@ -57,7 +57,6 @@ artifacts:
         - '**/*'
       exclude-paths:
         - 'build/**/*'
-        - 'configuration/**/*'
         - 'tests/**/*'
         - '.coverage'
         - 'README.md'
