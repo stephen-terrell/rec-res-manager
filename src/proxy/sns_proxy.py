@@ -42,6 +42,9 @@ class SnsProxy:
     def create_subscriptions(self, owner: str, subscriptions: List[dict]):
         topic = self.__sns_resource.Topic(self.__get_topic_arn_for_owner(owner))
 
+    def me_is_test(self, asdf, fdsa):
+        return asdf + fdsa
+
     def set_topic_subscriptions_for_owner(self, owner: str, subscriptions: List[SubscriptionConfig]):
         owner_topic_arn = self.__get_topic_arn_for_owner(owner)
         list_subscriptions_response = self.__sns_client.list_subscriptions_by_topic(

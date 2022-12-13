@@ -1,19 +1,68 @@
 version: 0.2
 
 phases:
+  install:
+    runtime-versions:
+      python: 3.9
+    commands:
+      - python3 --version
+      - pip install --upgrade pip
   pre_build:
     commands:
-      - echo `ls`
-      - pip install -r requirements.txt --target ./
-      - echo `ls`
+      - python3 --version
+      - mkdir build
+      - cd build
+      - python3 -m venv test_venv
+      - . test_venv/bin/activate
+      - pip install --upgrade pip
+      - pip install -r ../tests/requirements.txt
+      - mkdir unit-test
+      - mkdir code-coverage
+      - cd code-coverage
+      - mkdir xml
+      - mkdir html
+      - cd ..
+      - cd ..
   build:
     commands:
-      - python -m unittest discover -s tst
+      - ls
+      - pytest
+        -s
+        -v
+        -p no:cacheprovider
+        --junitxml=build/unit-test/junit.xml
+        --cov=src
+        --cov-branch
+        --cov-report xml:build/code-coverage/xml/coverage-report.xml 
+        --cov-report html:build/code-coverage/html
+        tests
+      - pip install -r requirements.txt --target ./
+      - ls
+reports:
+  unit-test:
+    files:
+      - 'junit.xml'
+    base-directory: 'build/unit-test'
+    file-format: JUNITXML
+  code-coverage:
+    files:
+      - 'coverage-report.xml'
+    base-directory: 'build/code-coverage/xml'
+    file-format: COBERTURAXML
 artifacts:
+  name: builderArtifact
   secondary-artifacts:
     buildArtifact:
       files:
         - '**/*'
+      exclude-paths:
+        - 'build/**/*'
+        - 'configuration/**/*'
+        - 'tests/**/*'
+        - '.coverage'
+        - 'README.md'
+        - 'requirements.txt'
+        - '.gitignore'
       name: buildArtifact
     configArtifact:
       files:
