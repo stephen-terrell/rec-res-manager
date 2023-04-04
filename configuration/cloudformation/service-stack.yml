@@ -29,6 +29,19 @@ Resources:
         Variables:
           CONFIG_BUCKET_NAME: !Ref ConfigBucket
 
+  ApiAlertLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: rec-res-api-alert
+      Runtime: python3.9
+      Role: !GetAtt LambdaRole.Arn
+      Handler: src/handler/api/alert.handler
+      Timeout: 10
+      MemorySize: 512
+      Code:
+        S3Bucket: !Ref buildArtifactBucketName
+        S3Key: !Ref buildArtifactObjectKey
+
   LambdaRole:
     Type: "AWS::IAM::Role"
     Properties:
