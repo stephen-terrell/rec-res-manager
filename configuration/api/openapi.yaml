@@ -1,0 +1,399 @@
+openapi: "3.0.0"
+info:
+  version: 1.0.0
+  title: Recreation Reservation Manager api
+  license:
+    name: MIT
+servers:
+  - url: https://dev.api.campsites.terrells.io/v1
+    description: The dev server
+  - url: https://api.campsites.terrells.io/v1
+    description: The production server
+paths:
+  /alerts/{user}:
+    get:
+      summary: Gets all alert configs for a given user
+      operationId: listAlerts
+      tags:
+        - alert
+        - list
+      parameters:
+        - name: user
+          in: path
+          required: true
+          description: The user to retrieve alerts for
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Alerts'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Error'
+
+  /alert/{alertId}:
+    get:
+      summary: Gets a specific alert config
+      operationId: getAlert
+      tags:
+        - alert
+        - get
+      parameters:
+        - name: alertId
+          in: path
+          required: true
+          description: The id of the alert to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Alert'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Error'
+    post:
+      summary: Updates an alert config
+      operationId: updateAlert
+      tags:
+        - alert
+        - update
+      parameters:
+        - name: alertId
+          in: path
+          required: true
+          description: The id of the alert to retrieve
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateAlert'
+            examples:
+              newAlert:
+                checkInDate: 04/24/2023
+                checkOutDate: 04/28/2023
+                notificationPreferences:
+                  sensitivityLevel: ANY_DAYS_AVAILABLE
+                  enabled: true
+      responses:
+        '200':
+          description: Expected response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Alert'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Error'
+    delete:
+      summary: Deletes an alert config
+      operationId: deleteAlert
+      tags:
+        - alert
+        - delete
+      parameters:
+        - name: alertId
+          in: path
+          required: true
+          description: The id of the alert to retrieve
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Error'
+
+  /alert:
+    put:
+      summary: Adds a new alert config
+      operationId: createAlert
+      tags:
+        - alert
+        - add
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/NewAlert'
+            examples:
+              newAlert:
+                owner: carly-stephen
+                campgroundId: 232809
+                checkInDate: 04/24/2023
+                checkOutDate: 04/28/2023
+                notificationPreferences:
+                  sensitivityLevel: ANY_DAYS_AVAILABLE
+                  enabled: true
+      responses:
+        '200':
+          description: Expected response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Alert'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Error'
+
+  /subscriptions/{user}:
+    get:
+      summary: Gets all subscriptions for a user
+      operationId: listSubscriptions
+      tags:
+        - subscription
+        - list
+      parameters:
+        - name: user
+          in: path
+          required: true
+          description: The user to retrieve subscriptions for
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Subscriptions'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Error'
+
+  /subscriptions/{user}/{protocol}/{endpoint}:
+    put:
+      summary: Adds a new alert subscription
+      operationId: createSubscription
+      tags:
+        - subscription
+        - list
+      parameters:
+        - name: user
+          in: path
+          required: true
+          description: The user to retrieve subscriptions for
+          schema:
+            type: string
+        - name: protocol
+          in: path
+          required: true
+          description: The protocol
+          enum:
+            - email
+          schema:
+            type: string
+        - name: endpoint
+          in: path
+          required: true
+          description: The endpoint
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Expected response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Subscription'
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Error'
+    delete:
+      put:
+        summary: Deletes an alert subscription
+        operationId: deleteSubscription
+        tags:
+          - subscription
+          - delete
+        parameters:
+          - name: user
+            in: path
+            required: true
+            description: The user to retrieve subscriptions for
+            schema:
+              type: string
+          - name: protocol
+            in: path
+            required: true
+            description: The protocol
+            enum:
+              - email
+            schema:
+              type: string
+          - name: endpoint
+            in: path
+            required: true
+            description: The endpoint
+            schema:
+              type: string
+      responses:
+        '200':
+          description: Expected response
+        default:
+          description: unexpected error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/Error'
+
+components:
+  schemas:
+    Alerts:
+      type: array
+      items:
+        $ref: '#/components/schemas/Alert'
+    Alert:
+      type: object
+      properties:
+        user:
+          type: string
+        alertId:
+          type: string
+        campgroundId:
+          type: string
+        checkInDate:
+          type: string
+          format: date
+        checkOutDate:
+          type: string
+          format: date
+        notificationPreferences:
+          type: object
+          properties:
+            sensitivityLevel:
+              type: string
+              enum:
+                - ANY_DAYS_AVAILABLE
+                - ALL_DAYS_AVAILABLE
+              default: ALL_DAYS_AVAILABLE
+            notificationsEnabled:
+              type: boolean
+              default: true
+          required:
+            - sensitivityLevel
+            - notificationsEnabled
+        required:
+          - user
+          - alertId
+          - campgroundId
+          - checkInDate
+          - checkOutDate
+    NewAlert:
+      type: object
+      properties:
+        user:
+          type: string
+        campgroundId:
+          type: string
+        checkInDate:
+          type: string
+          format: date
+        checkOutDate:
+          type: string
+          format: date
+        notificationPreferences:
+          type: object
+          properties:
+            sensitivityLevel:
+              type: string
+              enum:
+                - ANY_DAYS_AVAILABLE
+                - ALL_DAYS_AVAILABLE
+              default: ALL_DAYS_AVAILABLE
+            enabled:
+              type: boolean
+              default: true
+          required:
+            - sensitivityLevel
+            - enabled
+        required:
+          - user
+          - campgroundId
+          - checkInDate
+          - checkOutDate
+    UpdateAlert:
+      type: object
+      properties:
+        checkInDate:
+          type: string
+          format: date
+        checkOutDate:
+          type: string
+          format: date
+        notificationPreferences:
+          type: object
+          properties:
+            sensitivityLevel:
+              type: string
+              enum:
+                - ANY_DAYS_AVAILABLE
+                - ALL_DAYS_AVAILABLE
+              default: ALL_DAYS_AVAILABLE
+            enabled:
+              type: boolean
+              default: true
+          required:
+            - sensitivityLevel
+            - enabled
+        required:
+          - checkInDate
+          - checkOutDate
+    Subscriptions:
+      type: array
+      items:
+        $ref: '#components/schemas/Subscription'
+    Subscription:
+      type: object
+      properties:
+        user:
+          type: string
+        protocol:
+          type: string
+          enum:
+            - email
+          default: email
+        endpoint:
+          type: string
+    Error:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: integer
+          format: int32
+        message:
+          type: string
