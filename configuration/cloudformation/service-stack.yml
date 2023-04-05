@@ -7,16 +7,16 @@ Parameters:
     Type: String
   buildArtifactObjectKey:
     Type: String
-  configBucketName:
-    Type: String
   configBucketArn:
+    Type: String
+  env:
     Type: String
 
 Resources:
   CheckReservationsLambda:
     Type: "AWS::Lambda::Function"
     Properties:
-      FunctionName: rec-res-check-reservations
+      FunctionName: !Sub 'rec-res-check-reservations-${env}'
       Runtime: python3.9
       Role: !GetAtt LambdaRole.Arn
       Handler: src/handler/check_requested_reservations.handler
@@ -32,7 +32,7 @@ Resources:
   ApiAlertLambda:
     Type: "AWS::Lambda::Function"
     Properties:
-      FunctionName: rec-res-api-alert
+      FunctionName: !Sub 'rec-res-api-alert-${env}'
       Runtime: python3.9
       Role: !GetAtt LambdaRole.Arn
       Handler: src/handler/api/alert.handler
@@ -45,7 +45,7 @@ Resources:
   LambdaRole:
     Type: "AWS::IAM::Role"
     Properties:
-      RoleName: rec-res-lambda-role
+      RoleName: !Sub 'rec-res-lambda-role-${env}'
       AssumeRolePolicyDocument:
         Version: "2012-10-17"
         Statement:
@@ -58,7 +58,7 @@ Resources:
               - "sts:AssumeRole"
       Policies:
         -
-          PolicyName: rec-res-lambda-policy
+          PolicyName: !Sub 'rec-res-lambda-policy-${env}'
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -85,10 +85,34 @@ Resources:
                   - "logs:PutLogEvents"
                 Resource: '*'
 
+  ApiGatewayRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: !Sub 'rec-res-api-gateway-role-${env}'
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Service:
+                - "apigateway.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+      Policies:
+        - PolicyName: !Sub 'rec-res-api-gateway-policy-${env}'
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "lambda:InvokeFunction"
+                Resource:
+                  - !GetAtt ApiAlertLambda.Arn
+
   RecResApiGateway:
     Type: AWS::ApiGatewayV2::Api
     Properties:
-      Name: rec-res-api
+      Name: !Sub 'rec-res-api-${env}'
       ProtocolType: HTTP
 
   RecResApiAuthorizer:
@@ -99,13 +123,13 @@ Resources:
       IdentitySource:
         - "$request.header.Authorization"
       JwtConfiguration:
-        Audience: 5bqrcgjpeej3u2vlgt3vg4ncu1
-        Issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/rec-res-users"
+        Audience:
+          - "5bqrcgjpeej3u2vlgt3vg4ncu1"
+        Issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/us-west-2_c11WeQkWB"
       Name: JwtAuthorizer
 
   RecResApiGetAlertsRoute:
     Type: 'AWS::ApiGatewayV2::Route'
-    DependsOn:
     Properties:
       ApiId: !Ref RecResApiGateway
       RouteKey: GET /alerts/{user}
@@ -117,6 +141,7 @@ Resources:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
       ApiId: !Ref RecResApiGateway
+      CredentialsArn: !GetAtt ApiGatewayRole.Arn
       IntegrationMethod: POST
       IntegrationType: AWS_PROXY
       IntegrationUri: !Join
@@ -130,17 +155,25 @@ Resources:
           - /invocations
       PayloadFormatVersion: 2.0
 
+  RecResApiStage:
+    Type: 'AWS::ApiGatewayV2::Stage'
+    Properties:
+      StageName: Prod
+      Description: Prod Stage
+      AutoDeploy: true
+      ApiId: !Ref RecResApiGateway
+
   ConfigBucket:
     Type: "AWS::S3::Bucket"
     Properties:
       BucketName: !Join
         - '-'
-        - ['rec-res-manager-configuration-bucket', !Ref "AWS::Region", !Ref "AWS::AccountId"]
+        - ['rec-res-manager-configuration', !Ref "env", !Ref "AWS::Region", !Ref "AWS::AccountId"]
 
   CheckReservationsEventRule:
     Type: "AWS::Events::Rule"
     Properties:
-      Name: check-reservations-event-rule
+      Name: !Sub 'check-reservations-event-rule-${env}'
       ScheduleExpression: "cron(* * * * ? *)"
       State: "DISABLED"
       Targets:
