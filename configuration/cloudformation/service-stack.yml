@@ -85,6 +85,51 @@ Resources:
                   - "logs:PutLogEvents"
                 Resource: '*'
 
+  RecResApiGateway:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: rec-res-api
+      ProtocolType: HTTP
+
+  RecResApiAuthorizer:
+    Type: AWS::ApiGatewayV2::Authorizer
+    Properties:
+      ApiId: !Ref RecResApiGateway
+      AuthorizerType: JWT
+      IdentitySource:
+        - "$request.header.Authorization"
+      JwtConfiguration:
+        Audience: 5bqrcgjpeej3u2vlgt3vg4ncu1
+        Issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/rec-res-users"
+      Name: JwtAuthorizer
+
+  RecResApiGetAlertsRoute:
+    Type: 'AWS::ApiGatewayV2::Route'
+    DependsOn:
+    Properties:
+      ApiId: !Ref RecResApiGateway
+      RouteKey: GET /alerts/{user}
+      AuthorizationType: JWT
+      AuthorizerId: !Ref RecResApiAuthorizer
+      Target: !Sub "integrations/${RecResApiGetAlertsIntegration}"
+
+  RecResApiGetAlertsIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref RecResApiGateway
+      IntegrationMethod: POST
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Join
+        - ''
+        - - 'arn:'
+          - !Ref 'AWS::Partition'
+          - ':apigateway:'
+          - !Ref 'AWS::Region'
+          - ':lambda:path/2015-03-31/functions/'
+          - !GetAtt ApiAlertLambda.Arn
+          - /invocations
+      PayloadFormatVersion: 2.0
+
   ConfigBucket:
     Type: "AWS::S3::Bucket"
     Properties:
