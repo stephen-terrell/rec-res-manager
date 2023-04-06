@@ -109,16 +109,16 @@ Resources:
                 Resource:
                   - !GetAtt ApiAlertLambda.Arn
 
-  RecResApiGateway:
+  RecResApiV1ApiGateway:
     Type: AWS::ApiGatewayV2::Api
     Properties:
       Name: !Sub 'rec-res-api-${env}'
       ProtocolType: HTTP
 
-  RecResApiAuthorizer:
+  RecResApiV1Authorizer:
     Type: AWS::ApiGatewayV2::Authorizer
     Properties:
-      ApiId: !Ref RecResApiGateway
+      ApiId: !Ref RecResApiV1ApiGateway
       AuthorizerType: JWT
       IdentitySource:
         - "$request.header.Authorization"
@@ -128,19 +128,55 @@ Resources:
         Issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/us-west-2_c11WeQkWB"
       Name: JwtAuthorizer
 
-  RecResApiGetAlertsRoute:
+  RecResApiV1GetAlertsRoute:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
-      ApiId: !Ref RecResApiGateway
+      ApiId: !Ref RecResApiV1ApiGateway
       RouteKey: GET /alerts/{user}
       AuthorizationType: JWT
-      AuthorizerId: !Ref RecResApiAuthorizer
-      Target: !Sub "integrations/${RecResApiGetAlertsIntegration}"
+      AuthorizerId: !Ref RecResApiV1Authorizer
+      Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
 
-  RecResApiGetAlertsIntegration:
+  RecResApiV1GetAlertRoute:
+    Type: 'AWS::ApiGatewayV2::Route'
+    Properties:
+      ApiId: !Ref RecResApiV1ApiGateway
+      RouteKey: GET /alert/{alertId}
+      AuthorizationType: JWT
+      AuthorizerId: !Ref RecResApiV1Authorizer
+      Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
+
+  RecResApiV1PostAlertRoute:
+    Type: 'AWS::ApiGatewayV2::Route'
+    Properties:
+      ApiId: !Ref RecResApiV1ApiGateway
+      RouteKey: POST /alert/{alertId}
+      AuthorizationType: JWT
+      AuthorizerId: !Ref RecResApiV1Authorizer
+      Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
+
+  RecResApiV1DeleteAlertRoute:
+    Type: 'AWS::ApiGatewayV2::Route'
+    Properties:
+      ApiId: !Ref RecResApiV1ApiGateway
+      RouteKey: DELETE /alert/{alertId}
+      AuthorizationType: JWT
+      AuthorizerId: !Ref RecResApiV1Authorizer
+      Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
+
+  RecResApiV1AlertAlertRoute:
+    Type: 'AWS::ApiGatewayV2::Route'
+    Properties:
+      ApiId: !Ref RecResApiV1ApiGateway
+      RouteKey: PUT /alert
+      AuthorizationType: JWT
+      AuthorizerId: !Ref RecResApiV1Authorizer
+      Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
+
+  RecResApiV1GetAlertsIntegration:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
-      ApiId: !Ref RecResApiGateway
+      ApiId: !Ref RecResApiV1ApiGateway
       CredentialsArn: !GetAtt ApiGatewayRole.Arn
       IntegrationMethod: POST
       IntegrationType: AWS_PROXY
@@ -155,13 +191,13 @@ Resources:
           - /invocations
       PayloadFormatVersion: 2.0
 
-  RecResApiStage:
+  RecResApiV1Stage:
     Type: 'AWS::ApiGatewayV2::Stage'
     Properties:
-      StageName: Prod
-      Description: Prod Stage
+      StageName: !Ref env
+      Description: the main stage
       AutoDeploy: true
-      ApiId: !Ref RecResApiGateway
+      ApiId: !Ref RecResApiV1ApiGateway
 
   ConfigBucket:
     Type: "AWS::S3::Bucket"
