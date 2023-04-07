@@ -1,0 +1,26 @@
+{
+  "userConfigs": {
+    "7ec4cc0c-fa4b-4f34-812b-9807e82e06d1": {
+      "version": 1,
+      "alertSubscriptions": [
+        {
+          "endpoint": "scubastevegcn@gmail.com",
+          "protocol": "email"
+        }
+      ],
+      "alertConfigs": {
+        "4756889b-295a-428e-a249-c2c9aced8f67": {
+          "type": "recreation.gov",
+          "campgroundId": "234059",
+          "checkInDate": "08/15/2023",
+          "checkOutDate": "08/17/2023",
+          "notificationPreferences": {
+            "notificationsEnabled": true,
+            "notificationSensitivityLevel": "ANY_DAYS_AVAILABLE"
+          }
+        }
+      }
+    }
+  },
+  "version": 1
+}

@@ -7,7 +7,7 @@ Parameters:
     Type: String
   buildArtifactObjectKey:
     Type: String
-  configBucketArn:
+  configBucketArn: # TODO: remove
     Type: String
   env:
     Type: String
@@ -41,6 +41,9 @@ Resources:
       Code:
         S3Bucket: !Ref buildArtifactBucketName
         S3Key: !Ref buildArtifactObjectKey
+      Environment:
+        Variables:
+          USER_CONFIG_BUCKET_NAME: !Ref UserConfigBucket
 
   LambdaRole:
     Type: "AWS::IAM::Role"
@@ -67,10 +70,16 @@ Resources:
                   - "s3:GetObject"
                   - "s3:PutObject"
                 Resource:
-                  - !Ref configBucketArn
+                  - !GetAtt UserConfigBucket.Arn
                   - !Join
                     - ''
-                    - [ !Ref configBucketArn, '/*' ]
+                    - - !GetAtt UserConfigBucket.Arn
+                      - '/*'
+                  - !Ref configBucketArn # TODO: remove
+                  - !Join
+                    - ''
+                    - - !Ref configBucketArn
+                      - '/*'
               -
                 Effect: "Allow"
                 Action:
@@ -132,7 +141,7 @@ Resources:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: GET /alerts/{user}
+      RouteKey: GET /user/{userId}/alerts
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
       Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
@@ -141,7 +150,7 @@ Resources:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: GET /alert/{alertId}
+      RouteKey: GET /user/{userId}/alert/{alertId}
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
       Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
@@ -150,7 +159,7 @@ Resources:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: POST /alert/{alertId}
+      RouteKey: POST /user/{userId}/alert/{alertId}
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
       Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
@@ -159,7 +168,7 @@ Resources:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: DELETE /alert/{alertId}
+      RouteKey: DELETE /user/{userId}/alert/{alertId}
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
       Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
@@ -168,7 +177,7 @@ Resources:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: PUT /alert
+      RouteKey: PUT /user/{userId}/alert
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
       Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
@@ -199,12 +208,21 @@ Resources:
       AutoDeploy: true
       ApiId: !Ref RecResApiV1ApiGateway
 
-  ConfigBucket:
+  ConfigBucket: # TODO: get this out of here
     Type: "AWS::S3::Bucket"
     Properties:
       BucketName: !Join
         - '-'
         - ['rec-res-manager-configuration', !Ref "env", !Ref "AWS::Region", !Ref "AWS::AccountId"]
+
+  UserConfigBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Join
+        - '-'
+        - - 'rec-res-user-config'
+          - !Ref env
+          - !Ref "AWS:AccountId"
 
   CheckReservationsEventRule:
     Type: "AWS::Events::Rule"

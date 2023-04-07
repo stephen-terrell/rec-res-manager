@@ -131,3 +131,5 @@ dmypy.json
 # jetbrains project file
 *.iml
 .idea
+
+junit.xml
