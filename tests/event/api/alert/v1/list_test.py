@@ -1,12 +1,12 @@
-import json
 import os
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 from unittest import TestCase
 
 from src.event.api.alert.v1.list import ListAlerts
 
 
+@patch.dict(os.environ, {'USER_CONFIG_BUCKET_NAME': 'us-west-2'})
 class TestList:
     @pytest.fixture
     def user_id_1(self):
@@ -98,24 +98,25 @@ class TestList:
         }
 
     @pytest.fixture
-    def s3_proxy_mock(self, user_config):
-        with patch('src.event.api.alert.v1.list.S3Proxy') as proxy_mock:
-            body_mock = MagicMock()
-            body_mock.read.return_value.decode.return_value = json.dumps(user_config)
-            get_response = {
-                'Body': body_mock
+    def user_config_provider(self, user_config):
+        with patch('src.event.api.alert.v1.list.UserConfigProvider') as user_config_provider_mock:
+            user_config_provider_mock.return_value.get_user_configs_v2.return_value = user_config
+
+            yield user_config_provider_mock
+
+    @pytest.fixture
+    def make_event(self):
+        def _make_event(user_id):
+            return {
+                'headers': {'x-rec-res-user-id': user_id}
             }
-            get_object_mock = MagicMock()
-            get_object_mock.return_value = get_response
-            proxy_mock.return_value = MagicMock(get_object=get_object_mock)
 
-            yield proxy_mock
+        return _make_event
 
-    @patch.dict(os.environ, {'USER_CONFIG_BUCKET_NAME': 'us-west-2'})
-    def test_list_alerts(self, s3_proxy_mock, alert_config_1, user_id_1, alert_id_1):
-        under_test = ListAlerts()
+    def test_enact(self, make_event, user_config_provider, alert_config_1, user_id_1, alert_id_1):
+        under_test = ListAlerts(make_event(user_id_1))
 
-        result = under_test.enact({'pathParameters': {'userId': user_id_1}})
+        result = under_test.enact()
 
         assert len(result) == 1
         TestCase().assertDictEqual(result[0], {
@@ -124,19 +125,19 @@ class TestList:
             **alert_config_1
         })
 
-    @patch.dict(os.environ, {'USER_CONFIG_BUCKET_NAME': 'us-west-2'})
-    def test_list_alerts_multiple(
+    def test_enact_multiple(
             self,
-            s3_proxy_mock,
+            make_event,
+            user_config_provider,
             alert_config_2,
             alert_config_3,
             user_id_2,
             alert_id_2,
             alert_id_3
     ):
-        under_test = ListAlerts()
+        under_test = ListAlerts(make_event(user_id_2))
 
-        result = under_test.enact({'pathParameters': {'userId': user_id_2}})
+        result = under_test.enact()
 
         assert len(result) == 2
         TestCase().assertDictEqual(result[0], {
@@ -149,3 +150,37 @@ class TestList:
             'alertId': alert_id_3,
             **alert_config_3
         })
+
+    def test_enact_unknown_user(self, make_event, user_config_provider):
+        under_test = ListAlerts(make_event('who'))
+
+        result = under_test.enact()
+
+        assert len(result) == 0
+
+    def test_enact_no_object(self, make_event, user_config_provider):
+        user_config_provider.return_value.get_user_configs_v2.return_value = None
+
+        under_test = ListAlerts(make_event('who'))
+
+        result = under_test.enact()
+
+        assert len(result) == 0
+
+    def test_enact_empty_config(self, make_event, user_config_provider):
+        user_config_provider.return_value.get_user_configs_v2.return_value = {}
+
+        under_test = ListAlerts(make_event('who'))
+
+        result = under_test.enact()
+
+        assert len(result) == 0
+
+    def test_enact_missing_key(self, make_event, user_config_provider):
+        user_config_provider.return_value.get_user_configs_v2.return_value = {'asdf': '1234'}
+
+        under_test = ListAlerts(make_event('who'))
+
+        result = under_test.enact()
+
+        assert len(result) == 0

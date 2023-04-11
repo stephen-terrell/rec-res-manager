@@ -10,7 +10,7 @@ cp ./user-config.json ./build/deploy
 
 cd build/deploy
 
-timestamp=$(date +%s) && echo $timestamp
+timestamp=$(date +%s)
 
 zip -r ./$timestamp.zip *
 

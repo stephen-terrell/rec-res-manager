@@ -44,6 +44,7 @@ Resources:
       Environment:
         Variables:
           USER_CONFIG_BUCKET_NAME: !Ref UserConfigBucket
+          API_COMMAND_QUEUE_URL: !Ref ApiCommandQueue
 
   LambdaRole:
     Type: "AWS::IAM::Role"
@@ -93,6 +94,13 @@ Resources:
                   - "logs:CreateLogStream"
                   - "logs:PutLogEvents"
                 Resource: '*'
+              -
+                Effect: "Allow"
+                Action:
+                  - "sqs:SendMessage"
+                  - "sqs:ReceiveMessage"
+                Resource:
+                  - !GetAtt ApiCommandQueue.Arn
 
   ApiGatewayRole:
     Type: "AWS::IAM::Role"
@@ -141,7 +149,7 @@ Resources:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: GET /user/{userId}/alerts
+      RouteKey: GET /alerts
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
       Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
@@ -150,7 +158,7 @@ Resources:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: GET /user/{userId}/alert/{alertId}
+      RouteKey: GET /alerts/{alertId}
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
       Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
@@ -159,7 +167,7 @@ Resources:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: POST /user/{userId}/alert/{alertId}
+      RouteKey: POST /alerts/{alertId}
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
       Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
@@ -168,7 +176,7 @@ Resources:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: DELETE /user/{userId}/alert/{alertId}
+      RouteKey: DELETE /alerts/{alertId}
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
       Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
@@ -177,7 +185,7 @@ Resources:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: PUT /user/{userId}/alert
+      RouteKey: PUT /alerts
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
       Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
@@ -199,6 +207,8 @@ Resources:
           - !GetAtt ApiAlertLambda.Arn
           - /invocations
       PayloadFormatVersion: 2.0
+      RequestParameters:
+        "overwrite:header.x-rec-res-user-id": "$context.authorizer.claims.sub"
 
   RecResApiV1Stage:
     Type: 'AWS::ApiGatewayV2::Stage'
@@ -222,7 +232,17 @@ Resources:
         - '-'
         - - 'rec-res-user-config'
           - !Ref env
-          - !Ref "AWS:AccountId"
+          - !Ref "AWS::AccountId"
+
+  ApiCommandQueue:
+    Type: "AWS::SQS::Queue"
+    Properties:
+      QueueName: !Join
+        - '-'
+        - - 'rec-res-api-command'
+          - !Ref env
+      MessageRetentionPeriod: 3600
+      VisibilityTimeout: 30
 
   CheckReservationsEventRule:
     Type: "AWS::Events::Rule"

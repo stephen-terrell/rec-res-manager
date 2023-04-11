@@ -1,32 +1,36 @@
-import json
-import os
+from typing import List
 
-from src.proxy.s3_proxy import S3Proxy
+from src.provider.user_config_provider import UserConfigProvider
 
 
 class ListAlerts:
+    __user_config_provider: UserConfigProvider
 
-    def enact(self, event):
-        user_id: str = event['pathParameters']['userId']
-        s3 = S3Proxy()
-        config_object = s3.get_object(os.environ['USER_CONFIG_BUCKET_NAME'], 'user-config-v2.json')
+    __user_id: str
 
-        body = config_object['Body']
-        stream = body.read()
-        decode = stream.decode('utf-8')
-        user_config = json.loads(decode)
+    def __init__(self, event: dict):
+        self.__user_config_provider = UserConfigProvider()
 
-        user_alert_configs: dict = user_config['userConfigs'][user_id]['alertConfigs']
+        self.__user_id = event['headers']['x-rec-res-user-id']
 
-        result = [{
-            'userId': user_id,
+    def enact(self) -> List[dict]:
+        user_config = self.__user_config_provider.get_user_configs_v2()
+
+        if user_config is None or 'userConfigs' not in user_config or self.__user_id not in user_config['userConfigs']:
+            return []
+
+        user_alert_configs: dict = user_config['userConfigs'][self.__user_id]['alertConfigs']
+
+        result: List = [{
+            'userId': self.__user_id,
             'alertId': key,
             'type': value['type'],
             'campgroundId': value['campgroundId'],
             'checkInDate': value['checkInDate'],
             'checkOutDate': value['checkOutDate'],
             'notificationPreferences': {
-                **value['notificationPreferences']
+                'notificationSensitivityLevel': value['notificationPreferences']['notificationSensitivityLevel'],
+                'notificationsEnabled': value['notificationPreferences']['notificationsEnabled']
             }
         } for key, value in user_alert_configs.items()]
 
