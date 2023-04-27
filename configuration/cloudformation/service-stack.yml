@@ -17,7 +17,7 @@ Resources:
     Type: "AWS::Lambda::Function"
     Properties:
       FunctionName: !Sub 'rec-res-check-reservations-${env}'
-      Runtime: python3.9
+      Runtime: python3.10
       Role: !GetAtt LambdaRole.Arn
       Handler: src/handler/check_requested_reservations.handler
       Timeout: 10
@@ -33,7 +33,7 @@ Resources:
     Type: "AWS::Lambda::Function"
     Properties:
       FunctionName: !Sub 'rec-res-api-alert-${env}'
-      Runtime: python3.9
+      Runtime: python3.10
       Role: !GetAtt LambdaRole.Arn
       Handler: src/handler/api/alert.handler
       Timeout: 10
@@ -45,6 +45,32 @@ Resources:
         Variables:
           USER_CONFIG_BUCKET_NAME: !Ref UserConfigBucket
           API_COMMAND_QUEUE_URL: !Ref ApiCommandQueue
+
+  CommandQueueLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: !Sub 'rec-res-process-command-queue-${env}'
+      Runtime: python3.10
+      Role: !GetAtt LambdaRole.Arn
+      Handler: src/handler/api/alert.handler
+      Timeout: 5
+      MemorySize: 512
+      Code:
+        S3Bucket: !Ref buildArtifactBucketName
+        S3Key: !Ref buildArtifactObjectKey
+      Environment:
+        Variables:
+          USER_CONFIG_BUCKET_NAME: !Ref UserConfigBucket
+          API_COMMAND_QUEUE_URL: !Ref ApiCommandQueue
+
+  QueueEventSource:
+    Type: "AWS::Lambda::EventSourceMapping"
+    Properties:
+      BatchSize: 5
+      EventSourceArn: !GetAtt ApiCommandQueue.Arn
+      FunctionName: !Ref CommandQueueLambda
+      MaximumBatchingWindowInSeconds: 0
+
 
   LambdaRole:
     Type: "AWS::IAM::Role"
@@ -241,6 +267,7 @@ Resources:
         - '-'
         - - 'rec-res-api-command'
           - !Ref env
+      FifoQueue: true
       MessageRetentionPeriod: 3600
       VisibilityTimeout: 30
 

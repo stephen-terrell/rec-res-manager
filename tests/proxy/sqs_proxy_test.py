@@ -20,16 +20,32 @@ class TestSqsProxy:
             'here': 'is a message'
         }
 
-    def test_init(self, boto3_mock):
-        under_test = SqsProxy()
-
-        boto3_mock.resource.return_value.Queue.assert_called_once_with('some-url')
+    @pytest.fixture
+    def receipt_handles(self):
+        return [
+            'handle1234',
+            'handleinyourhand',
+        ]
 
     def test_send_api_command(self, boto3_mock, message):
         under_test = SqsProxy()
 
         under_test.send_api_command(message)
 
-        boto3_mock.resource.return_value.Queue.return_value.send_message.assert_called_once_with(
-            MessageBody=json.dumps(message)
+        boto3_mock.client.return_value.send_message.assert_called_once_with(
+            QueueUrl='some-url',
+            MessageBody=json.dumps(message),
+            MessageGroupId='rec-res-api-commands',
+        )
+
+    def test_delete_api_command_messages(self, boto3_mock, receipt_handles):
+        under_test = SqsProxy()
+
+        under_test.delete_api_command_messages(receipt_handles)
+
+        boto3_mock.client.return_value.delete_messages_batch.assert_called_once_with(
+            QueueUrl='some-url',
+            Entries=[{'Id': index, 'ReceiptHandle': handle}
+                     for index, handle in enumerate(receipt_handles)],
+            MessageGroupId='rec-res-api-commands',
         )

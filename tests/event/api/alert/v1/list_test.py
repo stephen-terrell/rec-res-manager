@@ -100,7 +100,7 @@ class TestList:
     @pytest.fixture
     def user_config_provider(self, user_config):
         with patch('src.event.api.alert.v1.list.UserConfigProvider') as user_config_provider_mock:
-            user_config_provider_mock.return_value.get_user_configs_v2.return_value = user_config
+            user_config_provider_mock.return_value.get_v2_user_config.return_value = user_config
 
             yield user_config_provider_mock
 
@@ -159,7 +159,7 @@ class TestList:
         assert len(result) == 0
 
     def test_enact_no_object(self, make_event, user_config_provider):
-        user_config_provider.return_value.get_user_configs_v2.return_value = None
+        user_config_provider.return_value.get_v2_user_config.return_value = None
 
         under_test = ListAlerts(make_event('who'))
 
@@ -168,7 +168,7 @@ class TestList:
         assert len(result) == 0
 
     def test_enact_empty_config(self, make_event, user_config_provider):
-        user_config_provider.return_value.get_user_configs_v2.return_value = {}
+        user_config_provider.return_value.get_v2_user_config.return_value = {}
 
         under_test = ListAlerts(make_event('who'))
 
@@ -177,7 +177,7 @@ class TestList:
         assert len(result) == 0
 
     def test_enact_missing_key(self, make_event, user_config_provider):
-        user_config_provider.return_value.get_user_configs_v2.return_value = {'asdf': '1234'}
+        user_config_provider.return_value.get_v2_user_config.return_value = {'asdf': '1234'}
 
         under_test = ListAlerts(make_event('who'))
 

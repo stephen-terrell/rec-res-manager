@@ -27,7 +27,7 @@ class UserConfigProvider:
 
         return result
 
-    def get_user_configs_v2(self) -> dict:
+    def get_v2_user_config(self) -> dict:
         get_object_result = self.s3_proxy.get_object(self.__user_config_bucket_name, self.__user_config_key_name)
 
         if get_object_result is None or 'Body' not in get_object_result:
@@ -39,6 +39,10 @@ class UserConfigProvider:
             return {}
 
         return json.loads(decoded_result)
+
+    def update_v2_user_config(self, config: dict):
+        self.s3_proxy.put_object(self.__user_config_bucket_name, self.__user_config_key_name, json.dumps(config))
+
 
 camp_configs = [
     {

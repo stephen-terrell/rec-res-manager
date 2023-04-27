@@ -21,7 +21,7 @@ class PostAlert:
                         event['body']['notificationPreferences']['notificationSensitivityLevel'],
                     'notificationsEnabled':
                         event['body']['notificationPreferences']['notificationsEnabled'],
-                }
+                },
             }
         }
 

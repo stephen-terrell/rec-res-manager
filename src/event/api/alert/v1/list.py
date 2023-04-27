@@ -14,7 +14,7 @@ class ListAlerts:
         self.__user_id = event['headers']['x-rec-res-user-id']
 
     def enact(self) -> List[dict]:
-        user_config = self.__user_config_provider.get_user_configs_v2()
+        user_config = self.__user_config_provider.get_v2_user_config()
 
         if user_config is None or 'userConfigs' not in user_config or self.__user_id not in user_config['userConfigs']:
             return []

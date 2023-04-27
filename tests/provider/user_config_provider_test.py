@@ -25,14 +25,20 @@ class TestUserConfigProvider:
             }
             get_object_mock = MagicMock()
             get_object_mock.return_value = get_response
-            proxy_mock.return_value = MagicMock(get_object=get_object_mock)
+
+            put_object_mock = MagicMock()
+
+            proxy_mock.return_value = MagicMock(
+                get_object=get_object_mock,
+                put_object=put_object_mock,
+            )
 
             yield proxy_mock
 
     def test_get_user_config_v2(self, s3_proxy_mock, user_config):
         under_test = UserConfigProvider()
 
-        result = under_test.get_user_configs_v2()
+        result = under_test.get_v2_user_config()
 
         TestCase().assertDictEqual(result, user_config)
 
@@ -41,7 +47,7 @@ class TestUserConfigProvider:
 
         under_test = UserConfigProvider()
 
-        result = under_test.get_user_configs_v2()
+        result = under_test.get_v2_user_config()
 
         TestCase().assertDictEqual(result, {})
 
@@ -50,7 +56,7 @@ class TestUserConfigProvider:
 
         under_test = UserConfigProvider()
 
-        result = under_test.get_user_configs_v2()
+        result = under_test.get_v2_user_config()
 
         TestCase().assertDictEqual(result, {})
 
@@ -59,6 +65,17 @@ class TestUserConfigProvider:
 
         under_test = UserConfigProvider()
 
-        result = under_test.get_user_configs_v2()
+        result = under_test.get_v2_user_config()
 
         TestCase().assertDictEqual(result, {})
+
+    def test_update_v2_user_config(self, s3_proxy_mock, user_config):
+        under_test = UserConfigProvider()
+
+        under_test.update_v2_user_config(user_config)
+
+        s3_proxy_mock.return_value.put_object.assert_called_once_with(
+            'us-west-2',
+            'user-config-v2.json',
+            json.dumps(user_config)
+        )
