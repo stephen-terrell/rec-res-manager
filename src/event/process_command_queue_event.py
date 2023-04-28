@@ -1,8 +1,8 @@
 import json
 
-from command.api.alert.v1.create import CreateAlert
-from command.api.alert.v1.delete import DeleteAlert
-from command.api.alert.v1.update import UpdateAlert
+from src.command.api.alert.v1.create import CreateAlert
+from src.command.api.alert.v1.delete import DeleteAlert
+from src.command.api.alert.v1.update import UpdateAlert
 from src.provider.user_config_provider import UserConfigProvider
 from src.proxy.sqs_proxy import SqsProxy
 

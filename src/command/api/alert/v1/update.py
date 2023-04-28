@@ -1,4 +1,3 @@
-from src.command.api.alert.v1.create import CreateAlert
 
 class UpdateAlert:
 
@@ -11,4 +10,17 @@ class UpdateAlert:
 
     @staticmethod
     def handle_command(user_config: dict, message: dict) -> dict:
-        return CreateAlert.handle_command(user_config, message)
+        user_config['userConfigs'][message['userId']]['alertConfigs'][message['alertId']] = {
+            'type': 'recreation.gov',
+            'campgroundId': user_config['userConfigs'][message['userId']]['alertConfigs'][message['alertId']]['campgroundId'],
+            'checkInDate': message['checkInDate'],
+            'checkOutDate': message['checkOutDate'],
+            'notificationPreferences': {
+                'notificationSensitivityLevel':
+                    message['notificationPreferences']['notificationSensitivityLevel'],
+                'notificationsEnabled':
+                    message['notificationPreferences']['notificationsEnabled'],
+            },
+        }
+
+        return user_config

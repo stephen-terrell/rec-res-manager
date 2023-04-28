@@ -22,10 +22,9 @@ class SqsProxy:
         )
 
     def delete_api_command_messages(self, receipt_handles: List[str]):
-        entries = [{'Id': index, 'ReceiptHandle': handle}
+        entries = [{'Id': str(index), 'ReceiptHandle': handle}
                    for index, handle in enumerate(receipt_handles)]
-        self.__sqs_client.delete_messages_batch(
+        self.__sqs_client.delete_message_batch(
             QueueUrl=self.__api_command_queue_url,
             Entries=entries,
-            MessageGroupId=self.__message_group_id,
         )

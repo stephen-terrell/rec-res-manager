@@ -9,7 +9,7 @@ from src.event.api.alert.v1.get import GetAlert
 class TestGetAlert:
 
     def test_enact_raises(self):
-        under_test = GetAlert()
+        under_test = GetAlert({})
 
         with pytest.raises(NotImplementedError):
-            under_test.enact({})
+            under_test.enact()

@@ -28,15 +28,16 @@ class UserConfigProvider:
         return result
 
     def get_v2_user_config(self) -> dict:
+        default = {'userConfigs': {}}
         get_object_result = self.s3_proxy.get_object(self.__user_config_bucket_name, self.__user_config_key_name)
 
         if get_object_result is None or 'Body' not in get_object_result:
-            return {}
+            return default
 
         decoded_result = get_object_result['Body'].read().decode('utf-8')
 
         if decoded_result == '' or decoded_result == '{}':
-            return {}
+            return default
 
         return json.loads(decoded_result)
 

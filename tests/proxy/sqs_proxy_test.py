@@ -43,9 +43,8 @@ class TestSqsProxy:
 
         under_test.delete_api_command_messages(receipt_handles)
 
-        boto3_mock.client.return_value.delete_messages_batch.assert_called_once_with(
+        boto3_mock.client.return_value.delete_message_batch.assert_called_once_with(
             QueueUrl='some-url',
-            Entries=[{'Id': index, 'ReceiptHandle': handle}
+            Entries=[{'Id': str(index), 'ReceiptHandle': handle}
                      for index, handle in enumerate(receipt_handles)],
-            MessageGroupId='rec-res-api-commands',
         )

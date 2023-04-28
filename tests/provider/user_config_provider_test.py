@@ -10,6 +10,9 @@ from src.provider.user_config_provider import UserConfigProvider
 
 @patch.dict(os.environ, {'USER_CONFIG_BUCKET_NAME': 'us-west-2'})
 class TestUserConfigProvider:
+    @pytest.fixture
+    def default_user_config(self):
+        return {'userConfigs': {}}
 
     @pytest.fixture
     def user_config(self):
@@ -42,32 +45,32 @@ class TestUserConfigProvider:
 
         TestCase().assertDictEqual(result, user_config)
 
-    def test_get_user_config_v2_not_found(self, s3_proxy_mock):
+    def test_get_user_config_v2_not_found(self, s3_proxy_mock, default_user_config):
         s3_proxy_mock.return_value.get_object.return_value = None
 
         under_test = UserConfigProvider()
 
         result = under_test.get_v2_user_config()
 
-        TestCase().assertDictEqual(result, {})
+        TestCase().assertDictEqual(result, default_user_config)
 
-    def test_get_user_config_empty_string(self, s3_proxy_mock):
+    def test_get_user_config_empty_string(self, s3_proxy_mock, default_user_config):
         s3_proxy_mock.return_value.get_object.return_value['Body'].read.return_value.decode.return_value = ''
 
         under_test = UserConfigProvider()
 
         result = under_test.get_v2_user_config()
 
-        TestCase().assertDictEqual(result, {})
+        TestCase().assertDictEqual(result, default_user_config)
 
-    def test_get_user_config_empty_config(self, s3_proxy_mock):
+    def test_get_user_config_empty_config(self, s3_proxy_mock, default_user_config):
         s3_proxy_mock.return_value.get_object.return_value['Body'].read.return_value.decode.return_value = '{}'
 
         under_test = UserConfigProvider()
 
         result = under_test.get_v2_user_config()
 
-        TestCase().assertDictEqual(result, {})
+        TestCase().assertDictEqual(result, default_user_config)
 
     def test_update_v2_user_config(self, s3_proxy_mock, user_config):
         under_test = UserConfigProvider()

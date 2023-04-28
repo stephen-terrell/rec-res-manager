@@ -79,7 +79,6 @@ class TestPost:
             'userId': user_id_1,
             'alertId': alert_id_1,
             'type': 'recreation.gov',
-            'campgroundId': campground_id_1,
             'checkInDate': check_in_date_1,
             'checkOutDate': check_out_date_1,
             'notificationPreferences': notification_preferences

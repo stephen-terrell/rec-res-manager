@@ -13,7 +13,6 @@ class PostAlert:
                 'userId': event['headers']['x-rec-res-user-id'],
                 'alertId': event['pathParameters']['alertId'],
                 'type': 'recreation.gov',
-                'campgroundId': event['body']['campgroundId'],
                 'checkInDate': event['body']['checkInDate'],
                 'checkOutDate': event['body']['checkOutDate'],
                 'notificationPreferences': {

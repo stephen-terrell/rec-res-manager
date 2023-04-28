@@ -44,7 +44,7 @@ Resources:
       Environment:
         Variables:
           USER_CONFIG_BUCKET_NAME: !Ref UserConfigBucket
-          API_COMMAND_QUEUE_URL: !Ref ApiCommandQueue
+          API_COMMAND_QUEUE_URL: !Ref ApiQueue
 
   CommandQueueLambda:
     Type: "AWS::Lambda::Function"
@@ -52,7 +52,7 @@ Resources:
       FunctionName: !Sub 'rec-res-process-command-queue-${env}'
       Runtime: python3.10
       Role: !GetAtt LambdaRole.Arn
-      Handler: src/handler/api/alert.handler
+      Handler: src/handler/process_command_queue.handler
       Timeout: 5
       MemorySize: 512
       Code:
@@ -61,16 +61,15 @@ Resources:
       Environment:
         Variables:
           USER_CONFIG_BUCKET_NAME: !Ref UserConfigBucket
-          API_COMMAND_QUEUE_URL: !Ref ApiCommandQueue
+          API_COMMAND_QUEUE_URL: !Ref ApiQueue
 
   QueueEventSource:
     Type: "AWS::Lambda::EventSourceMapping"
     Properties:
       BatchSize: 5
-      EventSourceArn: !GetAtt ApiCommandQueue.Arn
+      EventSourceArn: !GetAtt ApiQueue.Arn
       FunctionName: !Ref CommandQueueLambda
       MaximumBatchingWindowInSeconds: 0
-
 
   LambdaRole:
     Type: "AWS::IAM::Role"
@@ -96,6 +95,7 @@ Resources:
                 Action:
                   - "s3:GetObject"
                   - "s3:PutObject"
+                  - "s3:ListBucket"
                 Resource:
                   - !GetAtt UserConfigBucket.Arn
                   - !Join
@@ -125,8 +125,10 @@ Resources:
                 Action:
                   - "sqs:SendMessage"
                   - "sqs:ReceiveMessage"
+                  - "sqs:DeleteMessage"
+                  - "sqs:GetQueueAttributes"
                 Resource:
-                  - !GetAtt ApiCommandQueue.Arn
+                  - !GetAtt ApiQueue.Arn
 
   ApiGatewayRole:
     Type: "AWS::IAM::Role"
@@ -260,16 +262,18 @@ Resources:
           - !Ref env
           - !Ref "AWS::AccountId"
 
-  ApiCommandQueue:
+  ApiQueue:
     Type: "AWS::SQS::Queue"
     Properties:
       QueueName: !Join
         - '-'
         - - 'rec-res-api-command'
           - !Ref env
+          - '.fifo'
       FifoQueue: true
       MessageRetentionPeriod: 3600
       VisibilityTimeout: 30
+      ContentBasedDeduplication: true
 
   CheckReservationsEventRule:
     Type: "AWS::Events::Rule"

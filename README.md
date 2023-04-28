@@ -11,9 +11,8 @@ A simple service for managing recreation dot gov reservations.
 
 
 ## API side
-* Create crud endpoints for users to manage reservations
-* set up queue and processor to handle reservation crud requests
 * endpoints to manage notifications
+* add existence checks for update/delete endpoints
 
 
 ## Website

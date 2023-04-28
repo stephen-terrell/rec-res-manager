@@ -6,9 +6,28 @@ from src.command.api.alert.v1.update import UpdateAlert
 class TestUpdate:
 
     @pytest.fixture
-    def user_config(self):
+    def user_config(self, user_id, alert_id):
         return {
-            'userConfigs': {}
+            'userConfigs': {
+                user_id: {
+                    'version': 1,
+                    'alertSubscriptions': [],
+                    'alertConfigs': {
+                        alert_id: {
+                            'type': 'recreation.gov',
+                            'campgroundId': '1234',
+                            'checkInDate': '01/01/2020',
+                            'checkOutDate': '01/01/2020',
+                            'notificationPreferences': {
+                                'notificationSensitivityLevel':
+                                    'asdf',
+                                'notificationsEnabled':
+                                    'asdf',
+                            },
+                        },
+                    }
+                }
+            }
         }
 
     @pytest.fixture
@@ -20,29 +39,29 @@ class TestUpdate:
         return 'alert-4321'
 
     @pytest.fixture
-    def config(self):
+    def update_config(self):
         return {
             'type': 'recreation.gov',
-            'campgroundId': 'oifnweoifnw',
-            'checkInDate': '01/01/2020',
-            'checkOutDate': '01/01/2020',
+            'campgroundId': '777777777',
+            'checkInDate': '01/01/2022',
+            'checkOutDate': '01/01/2022',
             'notificationPreferences': {
                 'notificationSensitivityLevel':
-                   'asdf',
+                    'fdsa',
                 'notificationsEnabled':
-                    'asdf',
+                    'fdsa',
             },
         }
 
     @pytest.fixture
-    def message(self, user_id, alert_id, config):
+    def message(self, user_id, alert_id, update_config):
         return {
             'userId': user_id,
             'alertId': alert_id,
-            **config,
+            **update_config,
         }
 
-    def test_handle_command(self, user_config, message, config, user_id, alert_id):
+    def test_handle_command(self, user_config, message, update_config, user_id, alert_id):
         result = UpdateAlert.handle_command(user_config, message)
 
         assert result == {
@@ -51,7 +70,10 @@ class TestUpdate:
                     'version': 1,
                     'alertSubscriptions': [],
                     'alertConfigs': {
-                        alert_id: config,
+                        alert_id: {
+                            **update_config,
+                            'campgroundId': '1234'
+                        }
                     },
                 },
             },
