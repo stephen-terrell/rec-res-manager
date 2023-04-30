@@ -13,30 +13,30 @@ class AlertEvent:
     __event: dict
     __context: dict
 
-    def __init__(self,  event: dict, context: dict):
+    def __init__(self, event: dict, context: dict):
         self.__event = event
-        if 'body' in event:
+        if "body" in event:
             # TODO: what is this for?
-            self.__event['body'] = json.loads(event['body'])
+            self.__event["body"] = json.loads(event["body"])
         self.__context = context
 
     def handle(self):
-        if 'routeKey' not in self.__event:
-            raise ValueError(f'Unknown event: {self.__event}')
+        if "routeKey" not in self.__event:
+            raise ValueError(f"Unknown event: {self.__event}")
 
         match self.__event:
-            case {'routeKey': 'GET /alerts'}:
+            case {"routeKey": "GET /alerts"}:
                 api_handler = ListAlerts
-            case {'routeKey': 'GET /alerts/{alertId}'}:
+            case {"routeKey": "GET /alerts/{alertId}"}:
                 api_handler = GetAlert
-            case {'routeKey': 'PUT /alerts'}:
+            case {"routeKey": "PUT /alerts"}:
                 api_handler = PutAlert
-            case {'routeKey': 'POST /alerts/{alertId}'}:
+            case {"routeKey": "POST /alerts/{alertId}"}:
                 api_handler = PostAlert
-            case {'routeKey': 'DELETE /alerts/{alertId}'}:
+            case {"routeKey": "DELETE /alerts/{alertId}"}:
                 api_handler = DeleteAlert
             case _:
-                raise ValueError(f'invalid routeKey: \"{self.__event["routeKey"]}\"')
+                raise ValueError(f'invalid routeKey: "{self.__event["routeKey"]}"')
 
         print(self.__event)
 

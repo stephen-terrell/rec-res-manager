@@ -45,6 +45,7 @@ class CheckReservationsEvent:
             CampsiteType.RV_ELECTRIC,
         ]
 
+    # flake8: noqa: C901
     def handle(self):
         user_configs = self._user_config_provider.get_user_configs()
         notification_config_update = {}
@@ -57,16 +58,19 @@ class CheckReservationsEvent:
                 requested_campground_availability = self._recreation_proxy.get_campground_availability(
                     campground_id=campground_config.campground_id,
                     start_date=campground_config.check_in_date,
-                    end_date=campground_config.check_out_date
+                    end_date=campground_config.check_out_date,
                 )
 
                 if not requested_campground_availability:
-                    print('Probably got an error from recreation api. will retry next go.')
+                    print("Probably got an error from recreation api. will retry next go.")
 
                     continue
 
-                for campsite_id, campsite_availability in requested_campground_availability.get('campsites').items():
-                    campsite_type = CampsiteType(campsite_availability.get('campsite_type'))
+                for (
+                    campsite_id,
+                    campsite_availability,
+                ) in requested_campground_availability.get("campsites").items():
+                    campsite_type = CampsiteType(campsite_availability.get("campsite_type"))
 
                     if not self.__campsite_type_match(campground_config.allow_rv_like_sites, campsite_type):
                         continue
@@ -74,14 +78,16 @@ class CheckReservationsEvent:
                     campsite = CampsiteAvailability(
                         campsite_id=campsite_id,
                         campsite_type=campsite_type,
-                        site=campsite_availability.get('site'),
+                        site=campsite_availability.get("site"),
                     )
 
                     check_date = campground_config.check_in_date
                     while check_date < campground_config.check_out_date:
                         campsite.add_availability(
-                            date=check_date.strftime('%Y-%m-%d'),
-                            status=campsite_availability.get('availabilities').get(str(check_date.strftime('%Y-%m-%dT00:00:00Z')))
+                            date=check_date.strftime("%Y-%m-%d"),
+                            status=campsite_availability.get("availabilities").get(
+                                str(check_date.strftime("%Y-%m-%dT00:00:00Z"))
+                            ),
                         )
                         check_date += timedelta(days=1)
 
@@ -96,8 +102,11 @@ class CheckReservationsEvent:
                 if len(campground_availability.get_campsites()) > 0:
                     campground_availabilities.append(campground_availability)
                 else:
-                    print("found no availabilities for campground: {campground_id}".format(
-                        campground_id=campground_config.campground_id))
+                    print(
+                        "found no availabilities for campground: {campground_id}".format(
+                            campground_id=campground_config.campground_id
+                        )
+                    )
 
             # we found something we should tell the customer about
             if len(campground_availabilities) > 0:
@@ -109,7 +118,9 @@ class CheckReservationsEvent:
                 for ca in campground_availabilities:
                     notification_config_update[user_config.owner_id][ca.campground_id] = {}
                     for cs in ca.get_campsites():
-                        notification_config_update[user_config.owner_id][ca.campground_id][cs.campsite_id] = cs.availabilities
+                        notification_config_update[user_config.owner_id][ca.campground_id][
+                            cs.campsite_id
+                        ] = cs.availabilities
 
         if len(notification_config_update.items()):
             self._notification_config_provider.update_notification_config(notification_config_update)
@@ -119,31 +130,52 @@ class CheckReservationsEvent:
         print(message_string)
         self._sns_proxy.send_notification(owner=owner, message=message_string)
 
-    def __availability_match(self, campsite: CampsiteAvailability, notification_preferences: NotificationPreferenceConfig) -> bool:
-        if campsite.is_fully_available() and notification_preferences.notification_sensitivity_level == SensitivityLevel.ALL_DAYS_AVAILABLE:
+    def __availability_match(
+        self,
+        campsite: CampsiteAvailability,
+        notification_preferences: NotificationPreferenceConfig,
+    ) -> bool:
+        if (
+            campsite.is_fully_available()
+            and notification_preferences.notification_sensitivity_level == SensitivityLevel.ALL_DAYS_AVAILABLE
+        ):
             return True
-        if campsite.is_partially_available() and notification_preferences.notification_sensitivity_level == SensitivityLevel.ANY_DAYS_AVAILABLE:
+        if (
+            campsite.is_partially_available()
+            and notification_preferences.notification_sensitivity_level == SensitivityLevel.ANY_DAYS_AVAILABLE
+        ):
             return True
 
         return False
 
     def __campsite_type_match(self, allow_rv_like_sites: bool, campsite_type: CampsiteType):
-        if allow_rv_like_sites and (campsite_type in self.__rv_like_campsites or campsite_type in self.__allowed_campsite_types):
+        if allow_rv_like_sites and (
+            campsite_type in self.__rv_like_campsites or campsite_type in self.__allowed_campsite_types
+        ):
             return True
         if not allow_rv_like_sites and campsite_type in self.__allowed_campsite_types:
             return True
 
         return False
 
-    def __any_non_notified(self, owner: str, campground_id: str, campsite_availability: CampsiteAvailability) -> bool:
+    def __any_non_notified(
+        self,
+        owner: str,
+        campground_id: str,
+        campsite_availability: CampsiteAvailability,
+    ) -> bool:
         notification_config = self._notification_config_provider.get_notification_config()
-        if owner not in notification_config or campground_id not in notification_config.get(owner) or campsite_availability.campsite_id not in notification_config.get(owner).get(campground_id):
+        if (
+            owner not in notification_config
+            or campground_id not in notification_config[owner]
+            or campsite_availability.campsite_id not in notification_config[owner][campground_id]
+        ):
             return True
 
-        campsite_config = notification_config.get(owner).get(campground_id).get(campsite_availability.campsite_id)
+        campsite_config = notification_config[owner][campground_id][campsite_availability.campsite_id]
 
         for key, value in campsite_availability.availabilities.items():
-            if key not in campsite_config or (campsite_config.get(key) != 'Available' and value == 'Available'):
+            if key not in campsite_config or (campsite_config.get(key) != "Available" and value == "Available"):
                 return True
 
         return False

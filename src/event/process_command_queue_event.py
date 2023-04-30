@@ -18,9 +18,9 @@ class ProcessCommandQueueEvent:
         self._sqs_proxy = SqsProxy()
 
         self._handler_map = {
-            'CREATE_ALERT': CreateAlert.handle_command,
-            'DELETE_ALERT': DeleteAlert.handle_command,
-            'UPDATE_ALERT': UpdateAlert.handle_command,
+            "CREATE_ALERT": CreateAlert.handle_command,
+            "DELETE_ALERT": DeleteAlert.handle_command,
+            "UPDATE_ALERT": UpdateAlert.handle_command,
         }
 
     def handle(self):
@@ -29,17 +29,17 @@ class ProcessCommandQueueEvent:
         user_config = self._user_config_provider.get_v2_user_config()
         receipt_handles = []
 
-        for record in self._event['Records']:
-            body = json.loads(record['body'])
-            receipt_handles.append(record['receiptHandle'])
+        for record in self._event["Records"]:
+            body = json.loads(record["body"])
+            receipt_handles.append(record["receiptHandle"])
 
-            command_name = body['commandName']
+            command_name = body["commandName"]
             if command_name not in self._handler_map:
                 print(f'unsupported commandName: {body["commandName"]}')
                 print(record)
                 continue
 
-            user_config = self._handler_map[command_name](user_config, body['data'])
+            user_config = self._handler_map[command_name](user_config, body["data"])
 
         self._user_config_provider.update_v2_user_config(user_config)
         self._sqs_proxy.delete_api_command_messages(receipt_handles)

@@ -8,7 +8,7 @@ from src.proxy.recreation_prox import RecreationProxy
 @dataclass
 class CampgroundAvailability:
     campground_id: str
-    __campground_name: dict = field(init=False, default=None)
+    __campground_name: dict = field(init=False)
     __campsites: List[CampsiteAvailability] = field(default_factory=lambda: [], init=False)
 
     __recreation_proxy: RecreationProxy = field(init=False)
@@ -23,7 +23,7 @@ class CampgroundAvailability:
         return self.__campsites
 
     def get_campground_name(self):
-        if self.__campground_name is None:
+        if not self.__campground_name:
             self.__campground_name = self.__recreation_proxy.get_campground_name(self.campground_id)
 
         return self.__campground_name

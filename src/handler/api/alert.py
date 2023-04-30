@@ -7,5 +7,5 @@ def handler(event, context):
     return event_handler.handle()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     handler({}, {})

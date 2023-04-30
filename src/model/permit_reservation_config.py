@@ -7,4 +7,3 @@ from src.model.enum.protocol_type import ProtocolType
 class PermitReservationConfigV1:
     permit_id: int
     protocol: ProtocolType
-

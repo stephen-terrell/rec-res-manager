@@ -8,4 +8,4 @@ class GetAlert:
         pass
 
     def enact(self):
-        raise NotImplementedError('Get alert by id not yet implemented')
+        raise NotImplementedError("Get alert by id not yet implemented")

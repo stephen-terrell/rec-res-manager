@@ -3,13 +3,13 @@ from botocore.exceptions import ClientError
 
 
 class S3Proxy:
-    __s3_client = boto3.client('s3')
+    __s3_client = boto3.client("s3")
 
     def get_object(self, bucket_name: str, key: str):
         try:
             return self.__s3_client.get_object(Bucket=bucket_name, Key=key)
         except ClientError as ex:
-            if ex.response['Error']['Code'] == 'NoSuchKey':
+            if ex.response["Error"]["Code"] == "NoSuchKey":
                 return None
             else:
                 raise ex

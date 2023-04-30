@@ -11,15 +11,15 @@ class CampsiteAvailability:
     availabilities: dict = field(default_factory=dict)
 
     def is_fully_available(self) -> bool:
-        for key, value in self.availabilities.items():
-            if value != 'Available':
+        for _, value in self.availabilities.items():
+            if value != "Available":
                 return False
 
         return True
 
     def is_partially_available(self) -> bool:
-        for key, value in self.availabilities.items():
-            if value == 'Available':
+        for _, value in self.availabilities.items():
+            if value == "Available":
                 return True
 
         return False
