@@ -1,7 +1,4 @@
 class CreateAlert:
-    def __init__(self):
-        pass
-
     @staticmethod
     def generate_command(event: dict):
         raise NotImplementedError()

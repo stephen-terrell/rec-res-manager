@@ -56,6 +56,10 @@ class TestUpdate:
             **update_config,
         }
 
+    def test_generate_command(self):
+        with pytest.raises(NotImplementedError):
+            UpdateAlert.generate_command({})
+
     def test_handle_command(self, user_config, message, update_config, user_id, alert_id):
         result = UpdateAlert.handle_command(user_config, message)
 

@@ -37,7 +37,32 @@ class TestCreate:
             **config,
         }
 
-    def test_handle_command(self, user_config, message, config, user_id, alert_id):
+    def test_generate_command(self):
+        with pytest.raises(NotImplementedError):
+            CreateAlert.generate_command({})
+
+    def test_handle_command_user_exists(self, user_config, message, config, user_id, alert_id):
+        user_config["userConfigs"][user_id] = {
+            "version": 1,
+            "alertSubscriptions": [],
+            "alertConfigs": {},
+        }
+
+        result = CreateAlert.handle_command(user_config, message)
+
+        assert result == {
+            "userConfigs": {
+                user_id: {
+                    "version": 1,
+                    "alertSubscriptions": [],
+                    "alertConfigs": {
+                        alert_id: config,
+                    },
+                },
+            },
+        }
+
+    def test_handle_command_user_not_exists(self, user_config, message, config, user_id, alert_id):
         result = CreateAlert.handle_command(user_config, message)
 
         assert result == {

@@ -5,7 +5,3 @@ def handler(event, context):
     event_handler = ProcessCommandQueueEvent(event, context)
 
     event_handler.handle()
-
-
-if __name__ == "__main__":
-    handler({}, {})
