@@ -42,12 +42,12 @@ reports:
   unit-test:
     files:
       - 'junit.xml'
-    base-directory: 'build/unit-test'
+    base-directory: 'build/unit-test/xml'
     file-format: JUNITXML
   code-coverage:
     files:
       - 'coverage-report.xml'
-    base-directory: 'build/code-coverage/xml'
+    base-directory: 'build/coverage/xml'
     file-format: COBERTURAXML
 artifacts:
   name: builderArtifact
