@@ -7,35 +7,18 @@ phases:
     commands:
       - python3 --version
       - pip install --upgrade pip
+      - python3 -m pip install nox
   pre_build:
     commands:
       - python3 --version
-      - mkdir build
-      - cd build
-      - python3 -m venv test_venv
-      - . test_venv/bin/activate
       - pip install --upgrade pip
-      - pip install -r ../tests/requirements.txt
-      - mkdir unit-test
-      - mkdir code-coverage
-      - cd code-coverage
-      - mkdir xml
-      - mkdir html
-      - cd ..
-      - cd ..
+      - mkdir build
   build:
     commands:
+      - python3 --version
+      - pip install --upgrade pip
       - ls
-      - pytest
-        -s
-        -v
-        -p no:cacheprovider
-        --junitxml=build/unit-test/junit.xml
-        --cov=src
-        --cov-branch
-        --cov-report xml:build/code-coverage/xml/coverage-report.xml 
-        --cov-report html:build/code-coverage/html
-        tests
+      - nox
       - pip install -r requirements.txt --target ./
       - ls
 reports:
