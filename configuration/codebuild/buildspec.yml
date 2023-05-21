@@ -45,6 +45,9 @@ artifacts:
         - 'README.md'
         - 'requirements.txt'
         - '.gitignore'
+        - '.nox/**/*'
+        - '.mypy_cache/**/*'
+        - '.pytest_cache/**/*'
       name: buildArtifact
     configArtifact:
       files:
