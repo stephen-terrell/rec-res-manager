@@ -82,7 +82,7 @@ Resources:
                   }
                 RoleArn: !GetAtt CloudFormationTrustRole.Arn
                 StackName: rec-res-service-stack-dev
-                TemplatePath: buildArtifact::configuration/cloudformation/service-stack.yml
+                TemplatePath: buildArtifact::configuration/cloudformation/service-stack.yaml
               InputArtifacts:
                 - Name: buildArtifact
               Name: GenerateServiceStackChangeSet
@@ -118,8 +118,8 @@ Resources:
         PrivilegedMode: false
         ImagePullCredentialsType: CODEBUILD
       ServiceRole: !GetAtt CodeBuildServiceRole.Arn
-      TimeoutInMinutes: 60
-      QueuedTimeoutInMinutes: 480
+      TimeoutInMinutes: 15
+      QueuedTimeoutInMinutes: 120
       LogsConfig:
         CloudWatchLogs:
           Status: ENABLED
@@ -204,15 +204,6 @@ Resources:
                 Effect: "Allow"
                 Action:
                   - "codestar-connections:UseConnection"
-                Resource:
-                  - "*"
-              -
-                Effect: "Allow"
-                Action:
-                  - "codebuild:BatchGetBuilds"
-                  - "codebuild:StartBuild"
-                  - "codebuild:BatchGetBuildBatches"
-                  - "codebuild:StartBuildBatch"
                 Resource:
                   - "*"
               -
@@ -351,6 +342,12 @@ Resources:
               -
                 Action:
                   - 'apigateway:*'
+                Effect: Allow
+                Resource:
+                  - '*'
+              -
+                Action:
+                  - 'sqs:*'
                 Effect: Allow
                 Resource:
                   - '*'
