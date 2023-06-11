@@ -46,6 +46,23 @@ Resources:
           USER_CONFIG_BUCKET_NAME: !Ref UserConfigBucket
           API_COMMAND_QUEUE_URL: !Ref ApiQueue
 
+  ApiNotificationLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: !Sub 'rec-res-api-notifications-${env}'
+      Runtime: python3.10
+      Role: !GetAtt LambdaRole.Arn
+      Handler: src/handler/api/notification/handler.handler
+      Timeout: 10
+      MemorySize: 512
+      Code:
+        S3Bucket: !Ref buildArtifactBucketName
+        S3Key: !Ref buildArtifactObjectKey
+      Environment:
+        Variables:
+          USER_CONFIG_BUCKET_NAME: !Ref UserConfigBucket
+          API_COMMAND_QUEUE_URL: !Ref ApiQueue
+
   CommandQueueLambda:
     Type: "AWS::Lambda::Function"
     Properties:
@@ -153,6 +170,7 @@ Resources:
                   - "lambda:InvokeFunction"
                 Resource:
                   - !GetAtt ApiAlertLambda.Arn
+                  - !GetAtt ApiNotificationLambda.Arn
 
   RecResApiV1ApiGateway:
     Type: AWS::ApiGatewayV2::Api
@@ -162,11 +180,13 @@ Resources:
       CorsConfiguration:
         AllowHeaders:
           - authorization
+          - content-type
         AllowMethods:
           - GET
           - PUT
           - POST
           - DELETE
+          - OPTIONS
         AllowOrigins:
           - http://localhost:3000
 
@@ -228,6 +248,33 @@ Resources:
       AuthorizerId: !Ref RecResApiV1Authorizer
       Target: !Sub "integrations/${RecResApiV1CampgroundAlertsIntegration}"
 
+  RecResApiV1GetNotificationsRoute:
+    Type: 'AWS::ApiGatewayV2::Route'
+    Properties:
+      ApiId: !Ref RecResApiV1ApiGateway
+      RouteKey: GET /notifications
+      AuthorizationType: JWT
+      AuthorizerId: !Ref RecResApiV1Authorizer
+      Target: !Sub "integrations/${RecResApiV1NotificationsIntegration}"
+
+  RecResApiV1PutNotificationRoute:
+    Type: 'AWS::ApiGatewayV2::Route'
+    Properties:
+      ApiId: !Ref RecResApiV1ApiGateway
+      RouteKey: PUT /notifications
+      AuthorizationType: JWT
+      AuthorizerId: !Ref RecResApiV1Authorizer
+      Target: !Sub "integrations/${RecResApiV1NotificationsIntegration}"
+
+  RecResApiV1DeleteNotificationRoute:
+    Type: 'AWS::ApiGatewayV2::Route'
+    Properties:
+      ApiId: !Ref RecResApiV1ApiGateway
+      RouteKey: DELETE /notifications/{notificationId}
+      AuthorizationType: JWT
+      AuthorizerId: !Ref RecResApiV1Authorizer
+      Target: !Sub "integrations/${RecResApiV1NotificationsIntegration}"
+
   RecResApiV1CampgroundAlertsIntegration:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
@@ -243,6 +290,26 @@ Resources:
           - !Ref 'AWS::Region'
           - ':lambda:path/2015-03-31/functions/'
           - !GetAtt ApiAlertLambda.Arn
+          - /invocations
+      PayloadFormatVersion: 2.0
+      RequestParameters:
+        "overwrite:header.x-rec-res-user-id": "$context.authorizer.claims.sub"
+
+  RecResApiV1NotificationsIntegration:
+    Type: AWS::ApiGatewayV2::Integration
+    Properties:
+      ApiId: !Ref RecResApiV1ApiGateway
+      CredentialsArn: !GetAtt ApiGatewayRole.Arn
+      IntegrationMethod: POST
+      IntegrationType: AWS_PROXY
+      IntegrationUri: !Join
+        - ''
+        - - 'arn:'
+          - !Ref 'AWS::Partition'
+          - ':apigateway:'
+          - !Ref 'AWS::Region'
+          - ':lambda:path/2015-03-31/functions/'
+          - !GetAtt ApiNotificationLambda.Arn
           - /invocations
       PayloadFormatVersion: 2.0
       RequestParameters:
