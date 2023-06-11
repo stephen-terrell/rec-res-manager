@@ -2,7 +2,7 @@ import os
 import pytest
 from unittest.mock import patch
 
-from src.event.api.alert.v1.get import GetAlert
+from src.event.api.campground.alert.v1.get import GetAlert
 
 
 @patch.dict(os.environ, {"USER_CONFIG_BUCKET_NAME": "us-west-2"})

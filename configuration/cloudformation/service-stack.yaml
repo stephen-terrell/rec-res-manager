@@ -32,10 +32,10 @@ Resources:
   ApiAlertLambda:
     Type: "AWS::Lambda::Function"
     Properties:
-      FunctionName: !Sub 'rec-res-api-alert-${env}'
+      FunctionName: !Sub 'rec-res-api-campground-alert-${env}'
       Runtime: python3.10
       Role: !GetAtt LambdaRole.Arn
-      Handler: src/handler/api/alert.handler
+      Handler: src/handler/api/campground/alert.handler
       Timeout: 10
       MemorySize: 512
       Code:
@@ -159,6 +159,16 @@ Resources:
     Properties:
       Name: !Sub 'rec-res-api-${env}'
       ProtocolType: HTTP
+      CorsConfiguration:
+        AllowHeaders:
+          - authorization
+        AllowMethods:
+          - GET
+          - PUT
+          - POST
+          - DELETE
+        AllowOrigins:
+          - http://localhost:3000
 
   RecResApiV1Authorizer:
     Type: AWS::ApiGatewayV2::Authorizer
@@ -173,52 +183,52 @@ Resources:
         Issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/us-west-2_c11WeQkWB"
       Name: JwtAuthorizer
 
-  RecResApiV1GetAlertsRoute:
+  RecResApiV1GetCampgroundAlertsRoute:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: GET /alerts
+      RouteKey: GET /campground/alerts
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
-      Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
+      Target: !Sub "integrations/${RecResApiV1CampgroundAlertsIntegration}"
 
-  RecResApiV1GetAlertRoute:
+  RecResApiV1GetCampgroundAlertRoute:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: GET /alerts/{alertId}
+      RouteKey: GET /campground/alerts/{alertId}
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
-      Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
+      Target: !Sub "integrations/${RecResApiV1CampgroundAlertsIntegration}"
 
-  RecResApiV1PostAlertRoute:
+  RecResApiV1PostCampgroundAlertRoute:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: POST /alerts/{alertId}
+      RouteKey: POST /campground/alerts/{alertId}
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
-      Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
+      Target: !Sub "integrations/${RecResApiV1CampgroundAlertsIntegration}"
 
-  RecResApiV1DeleteAlertRoute:
+  RecResApiV1DeleteCampgroundAlertRoute:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: DELETE /alerts/{alertId}
+      RouteKey: DELETE /campground/alerts/{alertId}
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
-      Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
+      Target: !Sub "integrations/${RecResApiV1CampgroundAlertsIntegration}"
 
-  RecResApiV1AlertAlertRoute:
+  RecResApiV1PutCampgroundAlertRoute:
     Type: 'AWS::ApiGatewayV2::Route'
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
-      RouteKey: PUT /alerts
+      RouteKey: PUT /campground/alerts
       AuthorizationType: JWT
       AuthorizerId: !Ref RecResApiV1Authorizer
-      Target: !Sub "integrations/${RecResApiV1GetAlertsIntegration}"
+      Target: !Sub "integrations/${RecResApiV1CampgroundAlertsIntegration}"
 
-  RecResApiV1GetAlertsIntegration:
+  RecResApiV1CampgroundAlertsIntegration:
     Type: AWS::ApiGatewayV2::Integration
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway

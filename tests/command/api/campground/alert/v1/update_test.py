@@ -1,6 +1,6 @@
 import pytest
 
-from src.command.api.alert.v1.update import UpdateAlert
+from src.command.api.campground.alert.v1.update import UpdateAlert
 
 
 class TestUpdate:

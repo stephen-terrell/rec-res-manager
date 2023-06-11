@@ -18,7 +18,7 @@ cd ../..
 
 aws s3 cp ./build/deploy/$timestamp.zip s3://rec-res-config-us-west-2-379689532145/personal/$timestamp.zip
 
-aws cloudformation update-stack --stack-name rec-res-service-stack-personal --template-body file://configuration/cloudformation/service-stack.yml --parameters ParameterKey=buildArtifactBucketName,ParameterValue=rec-res-config-us-west-2-379689532145 ParameterKey=buildArtifactObjectKey,ParameterValue=personal/$timestamp.zip ParameterKey=configBucketArn,ParameterValue=arn:aws:s3:::rec-res-config-us-west-2-379689532145 ParameterKey=env,ParameterValue=personal --capabilities CAPABILITY_NAMED_IAM
+aws cloudformation update-stack --stack-name rec-res-service-stack-personal --template-body file://configuration/cloudformation/service-stack.yaml --parameters ParameterKey=buildArtifactBucketName,ParameterValue=rec-res-config-us-west-2-379689532145 ParameterKey=buildArtifactObjectKey,ParameterValue=personal/$timestamp.zip ParameterKey=configBucketArn,ParameterValue=arn:aws:s3:::rec-res-config-us-west-2-379689532145 ParameterKey=env,ParameterValue=personal --capabilities CAPABILITY_NAMED_IAM
 
 rm -rf ./build/deploy
 

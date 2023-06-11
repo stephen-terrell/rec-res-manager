@@ -1,9 +1,9 @@
 import json
-from src.event.api.alert.v1.delete import DeleteAlert
-from src.event.api.alert.v1.get import GetAlert
-from src.event.api.alert.v1.list import ListAlerts
-from src.event.api.alert.v1.post import PostAlert
-from src.event.api.alert.v1.put import PutAlert
+from src.event.api.campground.alert.v1.delete import DeleteAlert
+from src.event.api.campground.alert.v1.get import GetAlert
+from src.event.api.campground.alert.v1.list import ListAlerts
+from src.event.api.campground.alert.v1.post import PostAlert
+from src.event.api.campground.alert.v1.put import PutAlert
 
 from dataclasses import dataclass
 
@@ -25,15 +25,15 @@ class AlertEvent:
             raise ValueError(f"Unknown event: {self.__event}")
 
         match self.__event:
-            case {"routeKey": "GET /alerts"}:
+            case {"routeKey": "GET /campground/alerts"}:
                 api_handler = ListAlerts
-            case {"routeKey": "GET /alerts/{alertId}"}:
+            case {"routeKey": "GET /campground/alerts/{alertId}"}:
                 api_handler = GetAlert
-            case {"routeKey": "PUT /alerts"}:
+            case {"routeKey": "PUT /campground/alerts"}:
                 api_handler = PutAlert
-            case {"routeKey": "POST /alerts/{alertId}"}:
+            case {"routeKey": "POST /campground/alerts/{alertId}"}:
                 api_handler = PostAlert
-            case {"routeKey": "DELETE /alerts/{alertId}"}:
+            case {"routeKey": "DELETE /campground/alerts/{alertId}"}:
                 api_handler = DeleteAlert
             case _:
                 raise ValueError(f'invalid routeKey: "{self.__event["routeKey"]}"')

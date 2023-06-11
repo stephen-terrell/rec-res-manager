@@ -1,6 +1,6 @@
 import pytest
 
-from src.command.api.alert.v1.delete import DeleteAlert
+from src.command.api.campground.alert.v1.delete import DeleteAlert
 
 
 class TestDelete:

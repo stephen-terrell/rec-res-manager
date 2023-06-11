@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import patch
 from unittest import TestCase
 
-from src.event.api.alert.v1.list import ListAlerts
+from src.event.api.campground.alert.v1.list import ListAlerts
 
 
 @patch.dict(os.environ, {"USER_CONFIG_BUCKET_NAME": "us-west-2"})
@@ -93,7 +93,7 @@ class TestList:
 
     @pytest.fixture
     def user_config_provider(self, user_config):
-        with patch("src.event.api.alert.v1.list.UserConfigProvider") as user_config_provider_mock:
+        with patch("src.event.api.campground.alert.v1.list.UserConfigProvider") as user_config_provider_mock:
             user_config_provider_mock.return_value.get_v2_user_config.return_value = user_config
 
             yield user_config_provider_mock

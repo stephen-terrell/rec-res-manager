@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 
-from src.handler.api.alert import handler
+from src.handler.api.campground.alert import handler
 
 
 class TestAlert:
@@ -11,7 +11,7 @@ class TestAlert:
 
     @pytest.fixture
     def alert_event_mock(self, handle_result):
-        with patch("src.handler.api.alert.AlertEvent") as alert_event:
+        with patch("src.handler.api.campground.alert.AlertEvent") as alert_event:
             alert_event.return_value.handle.return_value = handle_result
             yield alert_event
 

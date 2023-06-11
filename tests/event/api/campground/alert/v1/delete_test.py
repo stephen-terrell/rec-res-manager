@@ -1,7 +1,7 @@
 import pytest
 from unittest.mock import patch
 
-from src.event.api.alert.v1.delete import DeleteAlert
+from src.event.api.campground.alert.v1.delete import DeleteAlert
 
 
 class TestDelete:
@@ -22,7 +22,7 @@ class TestDelete:
 
     @pytest.fixture
     def send_api_command_mock(self):
-        with patch("src.event.api.alert.v1.delete.SqsProxy") as sqs_proxy:
+        with patch("src.event.api.campground.alert.v1.delete.SqsProxy") as sqs_proxy:
             yield sqs_proxy.return_value.send_api_command
 
     def test_enact(self, user_id_1, alert_id_1, make_event, send_api_command_mock):

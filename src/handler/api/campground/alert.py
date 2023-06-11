@@ -1,4 +1,4 @@
-from src.event.api.alert.event import AlertEvent
+from src.event.api.campground.alert.event import AlertEvent
 
 
 def handler(event, context):
