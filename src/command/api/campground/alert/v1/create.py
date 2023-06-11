@@ -6,10 +6,12 @@ class CreateAlert:
     @staticmethod
     def handle_command(user_config: dict, message: dict) -> dict:
         user_id = message["userId"]
+
+        # TODO: encapsulate (used in notifications too)
         if user_id not in user_config["userConfigs"]:
             user_config["userConfigs"][user_id] = {
                 "version": 1,
-                "alertSubscriptions": [],
+                "alertSubscriptions": {},
                 "alertConfigs": {},
             }
 

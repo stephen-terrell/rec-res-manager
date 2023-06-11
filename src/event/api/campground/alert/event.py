@@ -16,7 +16,7 @@ class AlertEvent:
     def __init__(self, event: dict, context: dict):
         self.__event = event
         if "body" in event:
-            # TODO: what is this for?
+            # request body is just a string, so you need to parse it
             self.__event["body"] = json.loads(event["body"])
         self.__context = context
 
