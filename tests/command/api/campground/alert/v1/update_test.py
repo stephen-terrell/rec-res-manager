@@ -10,7 +10,7 @@ class TestUpdate:
             "userConfigs": {
                 user_id: {
                     "version": 1,
-                    "alertSubscriptions": [],
+                    "alertSubscriptions": {},
                     "alertConfigs": {
                         alert_id: {
                             "type": "recreation.gov",
@@ -67,7 +67,7 @@ class TestUpdate:
             "userConfigs": {
                 user_id: {
                     "version": 1,
-                    "alertSubscriptions": [],
+                    "alertSubscriptions": {},
                     "alertConfigs": {alert_id: {**update_config, "campgroundId": "1234"}},
                 },
             },

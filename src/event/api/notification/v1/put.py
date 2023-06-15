@@ -13,8 +13,8 @@ class PutNotification:
                 "userId": event["headers"]["x-rec-res-user-id"],
                 "notificationId": str(uuid4()),
                 "protocol": "email",
-                "endpoint": event["body"]["endpoint"]
-            }
+                "endpoint": event["body"]["endpoint"],
+            },
         }
 
     def enact(self) -> dict:
