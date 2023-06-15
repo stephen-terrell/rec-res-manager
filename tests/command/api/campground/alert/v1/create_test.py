@@ -44,7 +44,7 @@ class TestCreate:
     def test_handle_command_user_exists(self, user_config, message, config, user_id, alert_id):
         user_config["userConfigs"][user_id] = {
             "version": 1,
-            "alertSubscriptions": [],
+            "alertSubscriptions": {},
             "alertConfigs": {},
         }
 
@@ -54,7 +54,7 @@ class TestCreate:
             "userConfigs": {
                 user_id: {
                     "version": 1,
-                    "alertSubscriptions": [],
+                    "alertSubscriptions": {},
                     "alertConfigs": {
                         alert_id: config,
                     },
@@ -69,7 +69,7 @@ class TestCreate:
             "userConfigs": {
                 user_id: {
                     "version": 1,
-                    "alertSubscriptions": [],
+                    "alertSubscriptions": {},
                     "alertConfigs": {
                         alert_id: config,
                     },

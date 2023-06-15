@@ -39,13 +39,15 @@ def security_scan_bandit(session):
     session.run("bandit", "-r", "src/")
 
 
-@nox.session(python=python_versions)
+@nox.session(python=python_versions, tags=["test"])
 def test_pytest(session):
     session.install("pytest")
     session.install("-r", "tests/requirements.txt")
     session.install("pytest-html")
     session.run("pytest", "--version")
-    session.run("pytest", "--html=build/unit-test/html/index.html", "--junitxml=build/unit-test/xml/junit.xml", "tests")
+    session.run(
+        "pytest", "-v", "--html=build/unit-test/html/index.html", "--junitxml=build/unit-test/xml/junit.xml", "tests"
+    )
 
 
 @nox.session(python=python_versions, tags=["cov"])
