@@ -61,9 +61,9 @@ camp_configs = [
         },
         "campgrounds": [
             {
-                "campgroundId": "232279",  # Laguna
-                "checkInDate": "09/01/2023",
-                "checkOutDate": "09/02/2023",
+                "campgroundId": "234311",  # Convict Lake
+                "checkInDate": "08/08/2023",
+                "checkOutDate": "08/11/2023",
                 "allowRvLikeSites": True,
                 "notificationPreferences": {
                     "notificationsEnabled": True,
