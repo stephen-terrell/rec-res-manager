@@ -290,7 +290,7 @@ Resources:
     Properties:
       Name: !Sub 'check-reservations-event-rule-${env}'
       ScheduleExpression: "cron(* * * * ? *)"
-      State: "DISABLED"
+      State: "ENABLED"
       Targets:
         -
           Arn:

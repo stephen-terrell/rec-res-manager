@@ -61,9 +61,9 @@ camp_configs = [
         },
         "campgrounds": [
             {
-                "campgroundId": "251906",  # Olympic - Sol Duc
-                "checkInDate": "08/15/2022",
-                "checkOutDate": "08/17/2022",
+                "campgroundId": "232279",  # Laguna
+                "checkInDate": "09/01/2023",
+                "checkOutDate": "09/02/2023",
                 "allowRvLikeSites": True,
                 "notificationPreferences": {
                     "notificationsEnabled": True,
