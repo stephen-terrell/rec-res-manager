@@ -29,6 +29,8 @@ Resources:
         Variables:
           CONFIG_BUCKET_NAME: !Ref ConfigBucket
           USER_CONFIG_BUCKET_NAME: !Ref UserConfigBucket
+          AWS_ACCOUNT_ID: !Ref AWS::AccountId
+          AWS_REGION: !Ref AWS::Region
 
   ApiAlertLambda:
     Type: "AWS::Lambda::Function"
