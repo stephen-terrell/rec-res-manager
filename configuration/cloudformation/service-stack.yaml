@@ -109,6 +109,11 @@ Resources:
                     - ''
                     - - !Ref configBucketArn
                       - '/*'
+                  - !Ref ConfigBucket
+                  - !Join
+                    - ''
+                    - - !Ref ConfigBucket
+                      - '/*'
               -
                 Effect: "Allow"
                 Action:
