@@ -109,10 +109,10 @@ Resources:
                     - ''
                     - - !Ref configBucketArn
                       - '/*'
-                  - !Ref ConfigBucket
+                  - !GetAtt ConfigBucket.Arn
                   - !Join
                     - ''
-                    - - !Ref ConfigBucket
+                    - - !GetAtt ConfigBucket.Arn
                       - '/*'
               -
                 Effect: "Allow"
