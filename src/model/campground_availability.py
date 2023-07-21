@@ -8,7 +8,7 @@ from src.proxy.recreation_prox import RecreationProxy
 @dataclass
 class CampgroundAvailability:
     campground_id: str
-    __campground_name: dict = field(init=False)
+    __campground_name: dict = field(default_factory=lambda: {}, init=False)
     __campsites: List[CampsiteAvailability] = field(default_factory=lambda: [], init=False)
 
     __recreation_proxy: RecreationProxy = field(init=False)

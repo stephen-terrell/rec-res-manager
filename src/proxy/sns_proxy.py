@@ -21,7 +21,9 @@ class SnsProxy:
         self.__aws_account_id = os.environ["AWS_ACCOUNT_ID"]
 
     def send_notification(self, owner: str, message: str):
-        topic = self.__sns_resource.Topic(self.__arn_pattern.format(owner=owner))  # TODO: update
+        topic = self.__sns_resource.Topic(
+            self.__arn_pattern.format(region=self.__aws_region, account_id=self.__aws_account_id, owner=owner)
+        )  # TODO: update
         topic.publish(Subject="Found campground availability", Message=message)
 
     def topic_exists(self, owner: str):
