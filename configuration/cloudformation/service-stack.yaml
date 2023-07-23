@@ -64,6 +64,7 @@ Resources:
         Variables:
           USER_CONFIG_BUCKET_NAME: !Ref UserConfigBucket
           API_COMMAND_QUEUE_URL: !Ref ApiQueue
+          AWS_ACCOUNT_ID: !Ref AWS::AccountId
 
   CommandQueueLambda:
     Type: "AWS::Lambda::Function"
@@ -135,7 +136,13 @@ Resources:
                 Effect: "Allow"
                 Action:
                   - "sns:ListTopics"
+                  - "sns:ListSubscriptions"
+                  - "sns:ListSubscriptionsByTopic"
+                  - "sns:GetTopicAttributes"
                   - "sns:Publish"
+                  - "sns:Subscribe"
+                  - "sns:Unsubscribe"
+                  - "sns:CreateTopic"
                 Resource: "*"
               -
                 Effect: "Allow"

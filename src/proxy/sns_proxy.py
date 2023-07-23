@@ -7,18 +7,15 @@ from src.model.enum.protocol_type import ProtocolType
 
 
 class SnsProxy:
-    __topic_name_pattern: str = "rec-res-notification-{owner}"
-    __arn_pattern: str = "arn:aws:sns:{region}:{account_id}:rec-res-notification-{owner}"
-    __aws_region: str
-    __aws_account_id: str
-    __existing_topic_arns: List[str]
-    __existing_topic_arns_is_dirty: bool = False
-
     def __init__(self):
+        self.__topic_name_pattern: str = "rec-res-notification-{owner}"
+        self.__arn_pattern: str = "arn:aws:sns:{region}:{account_id}:rec-res-notification-{owner}"
         self.__sns_resource = boto3.resource("sns")
         self.__sns_client = boto3.client("sns")
         self.__aws_region = os.environ["AWS_REGION"]
         self.__aws_account_id = os.environ["AWS_ACCOUNT_ID"]
+        self.__existing_topic_arns: List[str] = []
+        self.__existing_topic_arns_is_dirty: bool = False
 
     def send_notification(self, owner: str, message: str):
         topic = self.__sns_resource.Topic(
@@ -26,12 +23,14 @@ class SnsProxy:
         )  # TODO: update
         topic.publish(Subject="Found campground availability", Message=message)
 
-    def topic_exists(self, owner: str):
+    def topic_exists(self, owner: str) -> bool:
         owner_topic_arn = self.__get_topic_arn_for_owner(owner)
 
-        all_topics = self.__get_all_topics()
-
-        return owner_topic_arn in all_topics
+        try:
+            self.__sns_client.get_topic_attributes(TopicArn=owner_topic_arn)
+            return True
+        except self.__sns_client.exceptions.NotFoundException:
+            return False
 
     def create_topic(self, owner: str):
         self.__sns_client.create_topic(Name=self.__topic_name_pattern.format(owner=owner))
@@ -42,6 +41,31 @@ class SnsProxy:
 
     def me_is_test(self, asdf, fdsa):
         return asdf + fdsa
+
+    def create_subscription(self, owner: str, subscription_config: SubscriptionConfig) -> str:
+        if subscription_config.protocol_type != ProtocolType.EMAIL:
+            raise Exception(f"Unsupported ProtocolType: [{subscription_config.protocol_type}]")
+
+        subscribe_response = self.__sns_client.subscribe(
+            TopicArn=self.__get_topic_arn_for_owner(owner),
+            Protocol=subscription_config.protocol_type.value,
+            Endpoint=subscription_config.endpoint,
+            ReturnSubscriptionArn=True,
+        )
+
+        return subscribe_response["SubscriptionArn"].split(":")[-1]
+
+    def remove_subscription(self, owner: str, subscription_id):
+        topic_arn = self.__get_topic_arn_for_owner(owner)
+        subscription_arn = topic_arn + ":" + subscription_id
+
+        self.__sns_client.unsubscribe(SubscriptionArn=subscription_arn)
+
+    def list_subscriptions(self, owner: str) -> List[dict]:
+        owner_topic_arn = self.__get_topic_arn_for_owner(owner)
+        list_subscriptions_response = self.__sns_client.list_subscriptions_by_topic(TopicArn=owner_topic_arn)
+
+        return list_subscriptions_response["Subscriptions"]
 
     def set_topic_subscriptions_for_owner(self, owner: str, subscriptions: List[SubscriptionConfig]):
         owner_topic_arn = self.__get_topic_arn_for_owner(owner)
@@ -71,7 +95,7 @@ class SnsProxy:
             if endpoint not in existing_subscriptions_dict:
                 self.__sns_client.subscribe(TopicArn=owner_topic_arn, Protocol=protocol.value, Endpoint=endpoint)
 
-    def __get_all_topics(self) -> List[str]:
+    def __get_all_topics(self) -> List[str]:  # TODO: not needed?
         if (
             self.__existing_topic_arns is not None
             and len(self.__existing_topic_arns) > 0

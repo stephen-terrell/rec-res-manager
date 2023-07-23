@@ -1,29 +1,26 @@
 from typing import List
 
-from src.provider.user_config_provider import UserConfigProvider
+from src.proxy.sns_proxy import SnsProxy
 
 
 class ListNotifications:
     def __init__(self, event: dict):
-        self.__user_config_provider: UserConfigProvider = UserConfigProvider()
+        self.__sns_proxy: SnsProxy = SnsProxy()
 
         self.__user_id: str = event["headers"]["x-rec-res-user-id"]
 
     def enact(self) -> List[dict]:
-        user_config: dict = self.__user_config_provider.get_v2_user_config()
+        if not self.__sns_proxy.topic_exists(self.__user_id):
+            self.__sns_proxy.create_topic(self.__user_id)
 
-        if user_config is None or "userConfigs" not in user_config or self.__user_id not in user_config["userConfigs"]:
-            return []
+        topic_subscriptions = self.__sns_proxy.list_subscriptions(self.__user_id)
 
-        user_notification_configs: dict = user_config["userConfigs"][self.__user_id]["alertSubscriptions"]
-
-        result: List = [
+        return [
             {
-                "notificationId": key,
-                "protocol": value["protocol"],
-                "endpoint": value["endpoint"],
+                "notificationId": sub["SubscriptionArn"].split(":")[-1],
+                "protocol": sub["Protocol"],
+                "endpoint": sub["Endpoint"],
             }
-            for key, value in user_notification_configs.items()
+            for sub in topic_subscriptions
+            if sub["SubscriptionArn"] != "PendingConfirmation"
         ]
-
-        return result

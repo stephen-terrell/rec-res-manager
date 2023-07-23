@@ -1,23 +1,21 @@
-from uuid import uuid4
-
-from src.proxy.sqs_proxy import SqsProxy
+from src.model.enum.protocol_type import ProtocolType
+from src.model.subscription_config import SubscriptionConfig
+from src.proxy.sns_proxy import SnsProxy
 
 
 class PutNotification:
     def __init__(self, event: dict):
-        self.__sqs_proxy: SqsProxy = SqsProxy()
-
-        self.__message = {
-            "commandName": "CREATE_NOTIFICATION",
-            "data": {
-                "userId": event["headers"]["x-rec-res-user-id"],
-                "notificationId": str(uuid4()),
-                "protocol": "email",
-                "endpoint": event["body"]["endpoint"],
-            },
-        }
+        self.__event: dict = event
+        self.__sns_proxy: SnsProxy = SnsProxy()
 
     def enact(self) -> dict:
-        self.__sqs_proxy.send_api_command(self.__message)
+        user_id = self.__event["headers"]["x-rec-res-user-id"]
+        if not self.__sns_proxy.topic_exists(user_id):
+            self.__sns_proxy.create_topic(user_id)
 
-        return self.__message["data"]  # type: ignore
+        endpoint = self.__event["body"]["endpoint"]
+        subscription_id = self.__sns_proxy.create_subscription(
+            user_id, SubscriptionConfig(endpoint, ProtocolType.EMAIL)
+        )
+
+        return {"userId": user_id, "notificationId": subscription_id, "protocol": "email", "endpoint": endpoint}

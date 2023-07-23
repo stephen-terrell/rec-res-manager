@@ -1,17 +1,13 @@
-from src.proxy.sqs_proxy import SqsProxy
+from src.proxy.sns_proxy import SnsProxy
 
 
 class DeleteNotification:
     def __init__(self, event: dict):
-        self.__sqs_proxy: SqsProxy = SqsProxy()
-
-        self.__message = {
-            "commandName": "DELETE_NOTIFICATION",
-            "data": {
-                "userId": event["headers"]["x-rec-res-user-id"],
-                "notificationId": event["pathParameters"]["notificationId"],
-            },
-        }
+        self.__event: dict = event
+        self.__sns_proxy: SnsProxy = SnsProxy()
 
     def enact(self):
-        self.__sqs_proxy.send_api_command(self.__message)
+        user_id = self.__event["headers"]["x-rec-res-user-id"]
+        subscription_id = self.__event["pathParameters"]["notificationId"]
+
+        self.__sns_proxy.remove_subscription(user_id, subscription_id)
