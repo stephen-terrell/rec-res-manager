@@ -10,7 +10,7 @@ class TestDelete:
         return "user1111111"
 
     @pytest.fixture
-    def notification_id_1(self):
+    def subscription_id_1(self):
         return "notificiation121212"
 
     @pytest.fixture
@@ -21,16 +21,14 @@ class TestDelete:
         return _make_event
 
     @pytest.fixture
-    def send_api_command_mock(self):
-        with patch("src.event.api.notification.v1.delete.SqsProxy") as sqs_proxy:
-            yield sqs_proxy.return_value.send_api_command
+    def remove_subscription_mock(self):
+        with patch("src.event.api.notification.v1.delete.SnsProxy") as sns_proxy:
+            yield sns_proxy.return_value.remove_subscription
 
-    def test_enact(self, user_id_1, notification_id_1, make_event, send_api_command_mock):
-        under_test = DeleteNotification(make_event(user_id_1, notification_id_1))
+    def test_enact(self, user_id_1, subscription_id_1, make_event, remove_subscription_mock):
+        under_test = DeleteNotification(make_event(user_id_1, subscription_id_1))
 
         result = under_test.enact()
 
         assert result is None
-        send_api_command_mock.assert_called_once_with(
-            {"commandName": "DELETE_NOTIFICATION", "data": {"userId": user_id_1, "notificationId": notification_id_1}}
-        )
+        remove_subscription_mock.assert_called_once_with(user_id_1, subscription_id_1)

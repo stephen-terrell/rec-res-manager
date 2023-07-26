@@ -2,12 +2,14 @@ import pytest
 from unittest.mock import patch
 
 from src.event.api.notification.v1.put import PutNotification
+from src.model.enum.protocol_type import ProtocolType
+from src.model.subscription_config import SubscriptionConfig
 
 
 class TestPut:
     @pytest.fixture
-    def notification_id_1(self):
-        return "notify222222"
+    def subscription_id_1(self):
+        return "subscribe"
 
     @pytest.fixture
     def user_id_1(self):
@@ -31,22 +33,55 @@ class TestPut:
         return _make_event
 
     @pytest.fixture
-    def send_api_command_mock(self):
-        with patch("src.event.api.notification.v1.put.SqsProxy") as sqs_proxy:
-            yield sqs_proxy.return_value.send_api_command
+    def sns_proxy_mock(self):
+        with patch("src.event.api.notification.v1.put.SnsProxy") as sns_proxy:
+            yield sns_proxy.return_value
 
     @pytest.fixture
-    def uuid_mock(self, notification_id_1):
-        with patch("src.event.api.notification.v1.put.uuid4") as uuid4:
-            uuid4.return_value = notification_id_1
-            yield uuid4
+    def create_subscription_mock(self, sns_proxy_mock):
+        return sns_proxy_mock.create_subscription
 
-    def test_enact(self, user_id_1, notification_id_1, endpoint, make_event, send_api_command_mock, uuid_mock):
+    @pytest.fixture
+    def topic_exists_mock(self, sns_proxy_mock):
+        sns_proxy_mock.topic_exists.return_value = True
+        return sns_proxy_mock.topic_exists
+
+    @pytest.fixture
+    def create_topic_mock(self, sns_proxy_mock):
+        return sns_proxy_mock.create_topic
+
+    def test_enact(
+        self, user_id_1, subscription_id_1, endpoint, make_event, create_subscription_mock, create_topic_mock
+    ):
+        create_subscription_mock.return_value = subscription_id_1
         under_test = PutNotification(make_event(user_id_1, endpoint))
 
         result = under_test.enact()
 
-        data = {"userId": user_id_1, "notificationId": notification_id_1, "protocol": "email", "endpoint": endpoint}
+        data = {"userId": user_id_1, "notificationId": subscription_id_1, "protocol": "email", "endpoint": endpoint}
 
         assert result == data
-        send_api_command_mock.assert_called_once_with({"commandName": "CREATE_NOTIFICATION", "data": data})
+        create_subscription_mock.assert_called_once_with(user_id_1, SubscriptionConfig(endpoint, ProtocolType.EMAIL))
+        create_topic_mock.assert_not_called()
+
+    def test_enact_missing_user(
+        self,
+        user_id_1,
+        subscription_id_1,
+        endpoint,
+        make_event,
+        create_subscription_mock,
+        create_topic_mock,
+        topic_exists_mock,
+    ):
+        topic_exists_mock.return_value = False
+        create_subscription_mock.return_value = subscription_id_1
+        under_test = PutNotification(make_event(user_id_1, endpoint))
+
+        result = under_test.enact()
+
+        data = {"userId": user_id_1, "notificationId": subscription_id_1, "protocol": "email", "endpoint": endpoint}
+
+        assert result == data
+        create_subscription_mock.assert_called_once_with(user_id_1, SubscriptionConfig(endpoint, ProtocolType.EMAIL))
+        create_topic_mock.assert_called_once_with(user_id_1)
