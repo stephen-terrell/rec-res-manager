@@ -87,21 +87,7 @@ camp_configs = [
                     "attemptAutoBook": True,
                     "autoBookSensitivityLevel": "ALL_DAYS_AVAILABLE",
                 },
-            },
-            {
-                "campgroundId": "10132055",  # Forks
-                "checkInDate": "08/10/2023",
-                "checkOutDate": "08/11/2023",
-                "allowRvLikeSites": True,
-                "notificationPreferences": {
-                    "notificationsEnabled": True,
-                    "notificationSensitivityLevel": "ANY_DAYS_AVAILABLE",
-                },
-                "autoBookPreferences": {
-                    "attemptAutoBook": True,
-                    "autoBookSensitivityLevel": "ALL_DAYS_AVAILABLE",
-                },
-            },
+            }
         ],
         "permits": [
             {
