@@ -87,7 +87,7 @@ camp_configs = [
                     "attemptAutoBook": True,
                     "autoBookSensitivityLevel": "ALL_DAYS_AVAILABLE",
                 },
-            }
+            },
         ],
         "permits": [
             {
