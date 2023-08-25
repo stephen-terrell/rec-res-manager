@@ -31,6 +31,23 @@ Resources:
           USER_CONFIG_BUCKET_NAME: !Ref UserConfigBucket
           AWS_ACCOUNT_ID: !Ref AWS::AccountId
 
+  CheckUserAlertsLambda:
+    Type: "AWS::Lambda::Function"
+    Properties:
+      FunctionName: !Sub 'rec-res-check-user-alerts-${env}'
+      Runtime: python3.10
+      Role: !GetAtt LambdaRole.Arn
+      Handler: src/handler/check_user_alerts.handler
+      Timeout: 50
+      MemorySize: 256
+      Code:
+        S3Bucket: !Ref buildArtifactBucketName
+        S3Key: !Ref buildArtifactObjectKey
+      Environment:
+        Variables:
+          USER_CONFIG_BUCKET_NAME: !Ref UserConfigBucket
+          AWS_ACCOUNT_ID: !Ref AWS::AccountId
+
   ApiAlertLambda:
     Type: "AWS::Lambda::Function"
     Properties:
@@ -380,6 +397,19 @@ Resources:
               - "Arn"
           Id: "TargetFunctionV1"
 
+  CheckUserAlertsEventRule:
+    Type: "AWS::Events::Rule"
+    Properties:
+      Name: !Sub 'check-user-alerts-event-rule-${env}'
+      ScheduleExpression: "cron(* * * * ? *)"
+      State: "ENABLED"
+      Targets:
+        - Arn:
+            Fn::GetAtt:
+              - "CheckUserAlertsLambda"
+              - "Arn"
+          Id: "TargetFunctionV1"
+
   PermissionForEventsToInvokeLambda:
     Type: AWS::Lambda::Permission
     Properties:
@@ -389,4 +419,15 @@ Resources:
       SourceArn:
         Fn::GetAtt:
           - "CheckReservationsEventRule"
+          - "Arn"
+
+  PermissionForEventsToInvokeCheckUserAlertsLambda:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Ref "CheckUserAlertsLambda"
+      Action: "lambda:InvokeFunction"
+      Principal: "events.amazonaws.com"
+      SourceArn:
+        Fn::GetAtt:
+          - "CheckUserAlertsEventRule"
           - "Arn"

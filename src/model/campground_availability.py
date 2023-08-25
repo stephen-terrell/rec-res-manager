@@ -19,6 +19,9 @@ class CampgroundAvailability:
     def add_campsite(self, campsite: CampsiteAvailability):
         self.__campsites.append(campsite)
 
+    def add_campsites(self, campsites: List[CampsiteAvailability]):
+        self.__campsites.extend(campsites)
+
     def get_campsites(self) -> List[CampsiteAvailability]:
         return self.__campsites
 
