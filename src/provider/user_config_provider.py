@@ -61,9 +61,9 @@ camp_configs = [
         },
         "campgrounds": [
             {
-                "campgroundId": "234311",  # Convict Lake
-                "checkInDate": "08/08/2023",
-                "checkOutDate": "08/11/2023",
+                "campgroundId": "247663",  # Signal Mtn
+                "checkInDate": "08/16/2023",
+                "checkOutDate": "08/18/2023",
                 "allowRvLikeSites": True,
                 "notificationPreferences": {
                     "notificationsEnabled": True,
