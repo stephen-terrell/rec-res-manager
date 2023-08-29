@@ -12,7 +12,6 @@ from src.proxy.sns_proxy import SnsProxy
 
 
 class CheckUserAlertsEvent:
-
     def __init__(self):
         self._user_config_provider = UserConfigProvider()
         self._recreation_proxy = RecreationProxy()
@@ -38,12 +37,16 @@ class CheckUserAlertsEvent:
             for _, alert_config in user_config["alertConfigs"].items():
                 campground_id = alert_config["campgroundId"]
                 sensitivity_level = alert_config["notificationPreferences"]["notificationSensitivityLevel"]
-                available_campsites = [campsite for campsite in self._recreation_proxy.get_available_campsites(
-                    campground_id,
-                    datetime.strptime(alert_config["checkInDate"], self._date_format),
-                    datetime.strptime(alert_config["checkOutDate"], self._date_format)
-                ) if self._campsite_availability_match(sensitivity_level, campsite)
-                                       and self._campsite_type_match(campsite)]
+                available_campsites = [
+                    campsite
+                    for campsite in self._recreation_proxy.get_available_campsites(
+                        campground_id,
+                        datetime.strptime(alert_config["checkInDate"], self._date_format),
+                        datetime.strptime(alert_config["checkOutDate"], self._date_format),
+                    )
+                    if self._campsite_availability_match(sensitivity_level, campsite)
+                    and self._campsite_type_match(campsite)
+                ]
 
                 if len(available_campsites) > 0 and self._any_non_notified(user_id, campground_id, available_campsites):
                     if user_id not in campgrounds_to_notify:

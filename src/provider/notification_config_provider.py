@@ -57,7 +57,9 @@ class NotificationConfigProvider:
                 if campground_id not in current_config[owner]:
                     current_config[owner][campground_id] = {}
                 for campsite_availability in available_campsites:
-                    current_config[owner][campground_id][campsite_availability.campsite_id] = campsite_availability.availabilities
+                    current_config[owner][campground_id][
+                        campsite_availability.campsite_id
+                    ] = campsite_availability.availabilities
 
         self.__s3_proxy.put_object(self.__config_bucket_name, self.__v2_config_key, json.dumps(current_config))
 

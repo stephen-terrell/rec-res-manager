@@ -34,20 +34,25 @@ class RecreationProxy:
 
         return availability
 
-    def get_available_campsites(self, campground_id: str, check_in_date: datetime, check_out_date: datetime) -> List[CampsiteAvailability]:
+    def get_available_campsites(
+        self, campground_id: str, check_in_date: datetime, check_out_date: datetime
+    ) -> List[CampsiteAvailability]:
         end_date = check_out_date - timedelta(days=1)
         campground_availability = self.get_campground_availability(campground_id, check_in_date, end_date)
 
-        campsites = [CampsiteAvailability(
-            campsite_id=campsite_id,
-            campsite_type=CampsiteType(campsite_data["campsite_type"]),
-            site=campsite_data["site"],
-            availabilities={
-                datetime.strptime(date, "%Y-%m-%dT00:00:00Z").strftime("%Y-%m-%d"): status
-                for date, status in campsite_data["availabilities"].items()
-                if check_in_date <= datetime.strptime(date, "%Y-%m-%dT00:00:00Z") <= end_date
-            }
-        ) for campsite_id, campsite_data in campground_availability["campsites"].items()]
+        campsites = [
+            CampsiteAvailability(
+                campsite_id=campsite_id,
+                campsite_type=CampsiteType(campsite_data["campsite_type"]),
+                site=campsite_data["site"],
+                availabilities={
+                    datetime.strptime(date, "%Y-%m-%dT00:00:00Z").strftime("%Y-%m-%d"): status
+                    for date, status in campsite_data["availabilities"].items()
+                    if check_in_date <= datetime.strptime(date, "%Y-%m-%dT00:00:00Z") <= end_date
+                },
+            )
+            for campsite_id, campsite_data in campground_availability["campsites"].items()
+        ]
 
         return [campsite for campsite in campsites if campsite.is_partially_available()]
 
