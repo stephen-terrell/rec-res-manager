@@ -12,6 +12,23 @@ Parameters:
   env:
     Type: String
 
+Mappings:
+  AllowOriginsMap: # TODO: fix hardcoded
+    personal:
+      url: http://localhost:3000
+    dev:
+      url: https://wd87fwf26a.execute-api.us-west-2.amazonaws.com
+  JwtAudienceMap: # TODO: fix hardcoded
+    personal:
+      clientId: 5bqrcgjpeej3u2vlgt3vg4ncu1
+    dev:
+      clientId: 26cko524st9f7kutg0vnadi3e6
+  JwtIssuerMap: # TODO: fix hardcoded
+    personal:
+      url: https://cognito-idp.us-west-2.amazonaws.com/us-west-2_c11WeQkWB
+    dev:
+      url: https://cognito-idp.us-west-2.amazonaws.com/us-west-2_NoTam8HXU
+
 Resources:
   CheckReservationsLambda:
     Type: "AWS::Lambda::Function"
@@ -219,7 +236,10 @@ Resources:
           - DELETE
           - OPTIONS
         AllowOrigins:
-          - http://localhost:3000
+          - !FindInMap
+            - AllowOriginsMap
+            - !Ref env
+            - url
 
   RecResApiV1Authorizer:
     Type: AWS::ApiGatewayV2::Authorizer
@@ -230,8 +250,14 @@ Resources:
         - "$request.header.Authorization"
       JwtConfiguration:
         Audience:
-          - "5bqrcgjpeej3u2vlgt3vg4ncu1"
-        Issuer: !Sub "https://cognito-idp.${AWS::Region}.amazonaws.com/us-west-2_c11WeQkWB"
+          - !FindInMap
+            - JwtAudienceMap
+            - !Ref env
+            - clientId
+        Issuer: !FindInMap
+          - JwtIssuerMap
+          - !Ref env
+          - url
       Name: JwtAuthorizer
 
   RecResApiV1GetCampgroundAlertsRoute:
