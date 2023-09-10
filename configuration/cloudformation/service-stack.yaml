@@ -17,7 +17,7 @@ Mappings:
     personal:
       url: http://localhost:3000
     dev:
-      url: https://wd87fwf26a.execute-api.us-west-2.amazonaws.com
+      url: https://dev.camp.stephenterrell.io
   JwtAudienceMap: # TODO: fix hardcoded
     personal:
       clientId: 5bqrcgjpeej3u2vlgt3vg4ncu1
