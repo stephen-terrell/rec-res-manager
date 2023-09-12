@@ -372,3 +372,24 @@ Resources:
                 Effect: Allow
                 Resource:
                   - '*'
+              -
+                Action:
+                  - acm:ListCertificates
+                  - acm:DeleteCertificate
+                  - acm:DescribeCertificate
+                  - acm:ResendValidationEmail
+                  - acm:RequestCertificate
+                  - acm:PutAccountConfiguration
+                  - acm:GetCertificate
+                  - acm:UpdateCertificateOptions
+                Effect: Allow
+                Resource: '*'
+              -
+                Action:
+                  - route53:ListResourceRecordSets
+                  - route53:ChangeResourceRecordSets
+                  - route53:GetChange
+                  - route53:GetHostedZone
+                  - 'route53:*HealthCheck'
+                Effect: Allow
+                Resource: '*'
