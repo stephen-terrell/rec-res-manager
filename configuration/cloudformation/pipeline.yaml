@@ -1,6 +1,20 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
 Description: CodePipeline for res-rec-manager service
+
+Parameters:
+  domainHostedZoneId:
+    Type: String
+
+Mappings:
+  apiDomainNameMap:
+    personal:
+      domain: api.personal.camp.stephenterrell.io
+    dev:
+      domain: api.dev.camp.stephenterrell.io
+    prod:
+      domain: api.camp.stephenterrell.io
+
 Outputs:
   ConfigBucketName:
     Description: The name of the config bucket
@@ -73,13 +87,20 @@ Resources:
                 ActionMode: CHANGE_SET_REPLACE
                 Capabilities: CAPABILITY_NAMED_IAM
                 ChangeSetName: service-stack-change-set-dev
-                ParameterOverrides: !Sub |
-                  {
-                    "buildArtifactBucketName": { "Fn::GetArtifactAtt": ["buildArtifact", "BucketName"]},
-                    "buildArtifactObjectKey": { "Fn::GetArtifactAtt": ["buildArtifact", "ObjectKey"]},
-                    "configBucketArn": "${ConfigBucket.Arn}",
-                    "env": "dev"
-                  }
+                ParameterOverrides: !Sub
+                  - |
+                    {
+                      "buildArtifactBucketName": { "Fn::GetArtifactAtt": ["buildArtifact", "BucketName"]},
+                      "buildArtifactObjectKey": { "Fn::GetArtifactAtt": ["buildArtifact", "ObjectKey"]},
+                      "configBucketArn": "${ConfigBucket.Arn}",
+                      "hostedZoneId": "${domainHostedZoneId}",
+                      "domainName": "${domainName}",
+                      "env": "dev"
+                    }
+                  - domainName: !FindInMap
+                    - apiDomainNameMap
+                    - dev
+                    - domain
                 RoleArn: !GetAtt CloudFormationTrustRole.Arn
                 StackName: rec-res-service-stack-dev
                 TemplatePath: buildArtifact::configuration/cloudformation/service-stack.yaml

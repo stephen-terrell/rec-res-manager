@@ -9,23 +9,30 @@ Parameters:
     Type: String
   configBucketArn: # TODO: remove
     Type: String
+  hostedZoneId:
+    Type: String
+  domainName:
+    Type: String
   env:
     Type: String
 
 Mappings:
   AllowOriginsMap: # TODO: fix hardcoded
     personal:
-      url: http://localhost:3000
+      url:
+        - http://localhost:3000
+        - https://personal.camp.stephenterrell.io
     dev:
-      url: https://dev.camp.stephenterrell.io
+      url:
+        - https://dev.camp.stephenterrell.io
   JwtAudienceMap: # TODO: fix hardcoded
     personal:
-      clientId: 5bqrcgjpeej3u2vlgt3vg4ncu1
+      clientId: 5s2lg6fg376k1dcsjakv9ps8cc
     dev:
       clientId: 26cko524st9f7kutg0vnadi3e6
   JwtIssuerMap: # TODO: fix hardcoded
     personal:
-      url: https://cognito-idp.us-west-2.amazonaws.com/us-west-2_c11WeQkWB
+      url: https://cognito-idp.us-west-2.amazonaws.com/us-west-2_5p7YvoRJr
     dev:
       url: https://cognito-idp.us-west-2.amazonaws.com/us-west-2_NoTam8HXU
 
@@ -235,11 +242,10 @@ Resources:
           - POST
           - DELETE
           - OPTIONS
-        AllowOrigins:
-          - !FindInMap
-            - AllowOriginsMap
-            - !Ref env
-            - url
+        AllowOrigins: !FindInMap
+          - AllowOriginsMap
+          - !Ref env
+          - url
 
   RecResApiV1Authorizer:
     Type: AWS::ApiGatewayV2::Authorizer
@@ -261,7 +267,7 @@ Resources:
       Name: JwtAuthorizer
 
   RecResApiV1GetCampgroundAlertsRoute:
-    Type: 'AWS::ApiGatewayV2::Route'
+    Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
       RouteKey: GET /campground/alerts
@@ -270,7 +276,7 @@ Resources:
       Target: !Sub "integrations/${RecResApiV1CampgroundAlertsIntegration}"
 
   RecResApiV1GetCampgroundAlertRoute:
-    Type: 'AWS::ApiGatewayV2::Route'
+    Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
       RouteKey: GET /campground/alerts/{alertId}
@@ -279,7 +285,7 @@ Resources:
       Target: !Sub "integrations/${RecResApiV1CampgroundAlertsIntegration}"
 
   RecResApiV1PostCampgroundAlertRoute:
-    Type: 'AWS::ApiGatewayV2::Route'
+    Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
       RouteKey: POST /campground/alerts/{alertId}
@@ -288,7 +294,7 @@ Resources:
       Target: !Sub "integrations/${RecResApiV1CampgroundAlertsIntegration}"
 
   RecResApiV1DeleteCampgroundAlertRoute:
-    Type: 'AWS::ApiGatewayV2::Route'
+    Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
       RouteKey: DELETE /campground/alerts/{alertId}
@@ -297,7 +303,7 @@ Resources:
       Target: !Sub "integrations/${RecResApiV1CampgroundAlertsIntegration}"
 
   RecResApiV1PutCampgroundAlertRoute:
-    Type: 'AWS::ApiGatewayV2::Route'
+    Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
       RouteKey: PUT /campground/alerts
@@ -306,7 +312,7 @@ Resources:
       Target: !Sub "integrations/${RecResApiV1CampgroundAlertsIntegration}"
 
   RecResApiV1GetNotificationsRoute:
-    Type: 'AWS::ApiGatewayV2::Route'
+    Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
       RouteKey: GET /notifications
@@ -315,7 +321,7 @@ Resources:
       Target: !Sub "integrations/${RecResApiV1NotificationsIntegration}"
 
   RecResApiV1PutNotificationRoute:
-    Type: 'AWS::ApiGatewayV2::Route'
+    Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
       RouteKey: PUT /notifications
@@ -324,7 +330,7 @@ Resources:
       Target: !Sub "integrations/${RecResApiV1NotificationsIntegration}"
 
   RecResApiV1DeleteNotificationRoute:
-    Type: 'AWS::ApiGatewayV2::Route'
+    Type: AWS::ApiGatewayV2::Route
     Properties:
       ApiId: !Ref RecResApiV1ApiGateway
       RouteKey: DELETE /notifications/{notificationId}
@@ -372,13 +378,51 @@ Resources:
       RequestParameters:
         "overwrite:header.x-rec-res-user-id": "$context.authorizer.claims.sub"
 
-  RecResApiV1Stage:
-    Type: 'AWS::ApiGatewayV2::Stage'
+  RecResApiV1DefaultStage:
+    Type: AWS::ApiGatewayV2::Stage
     Properties:
-      StageName: !Ref env
-      Description: the main stage
+      StageName: $default
       AutoDeploy: true
       ApiId: !Ref RecResApiV1ApiGateway
+
+  RecResApiCustomDomainName:
+    Type: AWS::ApiGatewayV2::DomainName
+    DependsOn: RecResApiV1DefaultStage
+    Properties:
+      DomainName: !Ref domainName
+      DomainNameConfigurations:
+        - EndpointType: REGIONAL
+          CertificateArn: !Ref RecResApiCertificate
+          SecurityPolicy: TLS_1_2
+
+  ApiGatewayMapping:
+    Type: AWS::ApiGatewayV2::ApiMapping
+    DependsOn: RecResApiCustomDomainName
+    Properties:
+      ApiId: !Ref RecResApiV1ApiGateway
+      DomainName: !Ref domainName
+      Stage: $default
+
+  RecResApiCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref domainName
+      DomainValidationOptions:
+        - DomainName: !Ref domainName
+          HostedZoneId: !Ref hostedZoneId
+      KeyAlgorithm: RSA_2048
+      ValidationMethod: DNS
+
+  RecResApiRoute53Record:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      AliasTarget:
+        DNSName: !GetAtt RecResApiCustomDomainName.RegionalDomainName
+        EvaluateTargetHealth: true
+        HostedZoneId: !GetAtt RecResApiCustomDomainName.RegionalHostedZoneId
+      HostedZoneId: !Ref hostedZoneId
+      Name: !Ref domainName
+      Type: A
 
   ConfigBucket: # TODO: get this out of here
     Type: "AWS::S3::Bucket"
