@@ -15,17 +15,6 @@ Mappings:
     prod:
       domain: api.camp.stephenterrell.io
 
-Outputs:
-  ConfigBucketName:
-    Description: The name of the config bucket
-    Value: !Ref ConfigBucket
-    Export:
-      Name: 'RecResConfigBucketName'
-  ConfigBucketArn:
-    Description: The arn of the config bucket
-    Value: !GetAtt ConfigBucket.Arn
-    Export:
-      Name: 'RecResConfigBucketArn'
 Resources:
   CodePipelineMain:
     Type: "AWS::CodePipeline::Pipeline"
@@ -75,7 +64,7 @@ Resources:
               Region: us-west-2
               RunOrder: 1
         -
-          Name: DeployServiceStack
+          Name: DeployServiceStackDev
           Actions:
             -
               ActionTypeId:
@@ -92,7 +81,6 @@ Resources:
                     {
                       "buildArtifactBucketName": { "Fn::GetArtifactAtt": ["buildArtifact", "BucketName"]},
                       "buildArtifactObjectKey": { "Fn::GetArtifactAtt": ["buildArtifact", "ObjectKey"]},
-                      "configBucketArn": "${ConfigBucket.Arn}",
                       "hostedZoneId": "${domainHostedZoneId}",
                       "domainName": "${domainName}",
                       "env": "dev"
@@ -106,7 +94,7 @@ Resources:
                 TemplatePath: buildArtifact::configuration/cloudformation/service-stack.yaml
               InputArtifacts:
                 - Name: buildArtifact
-              Name: GenerateServiceStackChangeSet
+              Name: GenerateServiceStackChangeSetDev
               RunOrder: 1
             -
               ActionTypeId:
@@ -118,7 +106,7 @@ Resources:
                 ActionMode: CHANGE_SET_EXECUTE
                 ChangeSetName: service-stack-change-set-dev
                 StackName: rec-res-service-stack-dev
-              Name: ExecuteServiceStackChangeSet
+              Name: ExecuteServiceStackChangeSetDev
               RunOrder: 2
 
   CodeBuild:
@@ -149,13 +137,6 @@ Resources:
           EncryptionDisabled: false
       Visibility: PRIVATE
 
-  ConfigBucket:
-    Type: "AWS::S3::Bucket"
-    Properties:
-      BucketName: !Join
-        - '-'
-        - [ 'rec-res-config', !Ref "AWS::Region", !Ref "AWS::AccountId" ]
-
   CodeBuildServiceRole:
     Type: AWS::IAM::Role
     Properties:
@@ -171,7 +152,7 @@ Resources:
               - "sts:AssumeRole"
       Policies:
         -
-          PolicyName: rec-res-codebuild-service-role-policy
+          PolicyName: rec-res-api-codebuild-service-role-policy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -200,7 +181,7 @@ Resources:
                   - "*"
       MaxSessionDuration: 3600
       Path: "/service-role/"
-      RoleName: rec-res-code-build-service-role
+      RoleName: rec-res-api-code-build-service-role
 
   CodePipelineServiceRole:
     Type: AWS::IAM::Role
@@ -217,7 +198,7 @@ Resources:
               - "sts:AssumeRole"
       Policies:
         -
-          PolicyName: rec-res-codepipeline-service-role-policy
+          PolicyName: rec-res-api-codepipeline-service-role-policy
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -243,15 +224,6 @@ Resources:
                 Resource:
                   - "arn:aws:s3:::codepipeline-us-west-2-789836859937"
                   - "arn:aws:s3:::codepipeline-us-west-2-789836859937/*"
-              -
-                Effect: "Allow"
-                Action:
-                  - "s3:Put*"
-                Resource:
-                  - !GetAtt ConfigBucket.Arn
-                  - !Join
-                    - ''
-                    - [ !GetAtt ConfigBucket.Arn, '/*' ]
               -
                 Effect: "Allow"
                 Action:
@@ -281,13 +253,13 @@ Resources:
                   - [ "arn:aws:lambda", !Ref "AWS::Region", !Ref "AWS::AccountId", "function:rec-res-process-user-config-file" ]
       MaxSessionDuration: 3600
       Path: "/service-role/"
-      RoleName: rec-res-codepipeline-service-role
+      RoleName: rec-res-api-codepipeline-service-role
 
   CloudFormationTrustRole:
     Type: AWS::IAM::Role
     Description: Creating service role in IAM for AWS CloudFormation
     Properties:
-      RoleName: rec-res-cloudformation-service-stack-role
+      RoleName: rec-res-api-cloudformation-service-stack-role
       AssumeRolePolicyDocument:
         Statement:
           - Action: sts:AssumeRole
@@ -298,7 +270,7 @@ Resources:
       Path: /
       Policies:
         -
-          PolicyName: rec-res-cloudformation-service-stack-policy
+          PolicyName: rec-res-api-cloudformation-service-stack-policy
           PolicyDocument:
             Statement:
               -

@@ -33,6 +33,7 @@ rv_like_campsite_types = {
 }
 
 
+# TODO: remove this file and the entire code path
 def handler(event, context):
     event_handler = CheckReservationsEvent(event, context)
 

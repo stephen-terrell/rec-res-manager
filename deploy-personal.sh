@@ -16,9 +16,9 @@ zip -r ./$timestamp.zip *
 
 cd ../..
 
-aws s3 cp ./build/deploy/$timestamp.zip s3://rec-res-config-us-west-2-379689532145/personal/$timestamp.zip
+aws s3 cp ./build/deploy/$timestamp.zip s3://rec-res-user-config-personal-379689532145/personal/$timestamp.zip
 
-aws cloudformation update-stack --stack-name rec-res-service-stack-personal --template-body file://configuration/cloudformation/service-stack.yaml --parameters ParameterKey=buildArtifactBucketName,ParameterValue=rec-res-config-us-west-2-379689532145 ParameterKey=buildArtifactObjectKey,ParameterValue=personal/$timestamp.zip ParameterKey=configBucketArn,ParameterValue=arn:aws:s3:::rec-res-config-us-west-2-379689532145 ParameterKey=domainName,ParameterValue=api.personal.camp.stephenterrell.io ParameterKey=hostedZoneId,ParameterValue=Z07013631K40E93YQXYF5 ParameterKey=env,ParameterValue=personal --capabilities CAPABILITY_NAMED_IAM
+aws cloudformation create-stack --stack-name rec-res-service-stack-personal --template-body file://configuration/cloudformation/service-stack.yaml --parameters ParameterKey=buildArtifactBucketName,ParameterValue=rec-res-user-config-personal-379689532145 ParameterKey=buildArtifactObjectKey,ParameterValue=personal/$timestamp.zip ParameterKey=domainName,ParameterValue=api.personal.camp.stephenterrell.io ParameterKey=hostedZoneId,ParameterValue=Z07013631K40E93YQXYF5 ParameterKey=env,ParameterValue=personal --capabilities CAPABILITY_NAMED_IAM
 
 rm -rf ./build/deploy
 
